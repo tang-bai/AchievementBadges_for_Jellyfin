@@ -612,8 +612,11 @@ font-size:0.88em;
         if (!host || host.dataset.abMounted === '1') return;
         host.dataset.abMounted = '1';
         host.innerHTML =
-            '<button type="button" data-style="classic" aria-pressed="' + (pref === 'classic' ? 'true' : 'false') + '">Classic</button>' +
-            '<button type="button" data-style="revamp"  aria-pressed="' + (pref === 'revamp'  ? 'true' : 'false') + '">Revamp</button>';
+            /* data-i18n so a later translation pass relabels them, and abT so
+               they are already translated when the dictionary happens to be
+               loaded by now (this mounts on load, immediately, and on pageshow). */
+            '<button type="button" data-style="classic" aria-pressed="' + (pref === 'classic' ? 'true' : 'false') + '" data-i18n="ui.style.classic">' + escapeHtml(abT('ui.style.classic', 'Classic')) + '</button>' +
+            '<button type="button" data-style="revamp"  aria-pressed="' + (pref === 'revamp'  ? 'true' : 'false') + '" data-i18n="ui.style.revamp">' + escapeHtml(abT('ui.style.revamp', 'Revamp')) + '</button>';
         host.addEventListener('click', function (ev) {
             var btn = ev.target.closest('button[data-style]');
             if (!btn) return;
@@ -923,35 +926,67 @@ font-size:0.88em;
         return { version: heroMeta.version, server: heroMeta.server, statusLabel: heroMeta.statusLabel };
     }
 
+    /* Jellyfin reports plugin status as a fixed set of English enum names.
+       Map the ones this page can show; anything unknown falls through as-is. */
+    var STATUS_KEYS = {
+        active:        'admin.kpi.active',
+        disabled:      'admin.status.disabled',
+        restart:       'admin.status.restart',
+        malfunctioned: 'admin.status.malfunctioned',
+        notsupported:  'admin.status.not_supported',
+        superceded:    'admin.status.superceded',
+        deleted:       'admin.status.deleted'
+    };
+    function statusText(raw) {
+        var s = String(raw == null ? '' : raw).trim();
+        if (!s) return abT('admin.kpi.active', 'Active');
+        var k = statusKey(s);
+        return k ? abT(k, s) : s;
+    }
+    /* The mapped key for a status, or '' when it is not one we know. The hero
+       puts it on the element as data-i18n so a later language switch relabels
+       the status without a reload. */
+    function statusKey(raw) {
+        var s = String(raw == null ? '' : raw).trim();
+        if (!s) return STATUS_KEYS.active;
+        return STATUS_KEYS[s.toLowerCase()] || '';
+    }
+    function i18nAttr(key) {
+        return key ? ' data-i18n="' + key + '"' : '';
+    }
+
     function buildPluginHero(plugin) {
         var s = plugin || {};
         return '' +
             /* v1.8.47: section number marker — unifies the editorial mono
                numbering already used on admin groups (01-04) and personal (05). */
-            '<span class="abPluginHeroSectionNum">' + escapeHtml(abT('admin.hero.section', '00 / PLUGIN OVERVIEW')) + '</span>' +
+            '<span class="abPluginHeroSectionNum" data-i18n="admin.hero.section">' + escapeHtml(abT('admin.hero.section', '00 / PLUGIN OVERVIEW')) + '</span>' +
             '<div class="abPluginHeroHead">' +
                 '<div class="abPluginHeroIdent">' +
-                    '<span class="abEyebrow">' + escapeHtml(abT('admin.hero.eyebrow', 'Plugin admin')) + '</span>' +
+                    '<span class="abEyebrow" data-i18n="admin.hero.eyebrow">' + escapeHtml(abT('admin.hero.eyebrow', 'Plugin admin')) + '</span>' +
                     '<h1 class="abPluginHeroTitle">Achievement Badges</h1>' +
                     '<div class="abPluginHeroMeta">' +
-                        '<span><span class="abStatusDot"></span>' + escapeHtml(s.statusLabel || abT('admin.kpi.active', 'Active')) + '</span>' +
+                        '<span><span class="abStatusDot"></span><span' + i18nAttr(statusKey(s.statusLabel)) + '>' + escapeHtml(statusText(s.statusLabel)) + '</span></span>' +
                         (s.version ? '<span>v' + escapeHtml(s.version) + '</span>' : '') +
                         (s.server ? '<span>Jellyfin ' + escapeHtml(s.server) + '</span>' : '') +
                     '</div>' +
                 '</div>' +
             '</div>' +
             '<div class="abPluginHeroKpis">' +
-                pluginKpi(abT('admin.kpi.users', 'Users tracked'),  s.users    == null ? '—' : s.users,    abT('admin.kpi.users_sub', 'profiles')) +
-                pluginKpi(abT('admin.kpi.badges', 'Badges defined'), s.badges   == null ? '—' : s.badges,   abT('admin.kpi.badges_sub', 'configured')) +
-                pluginKpi(abT('recap.unlocks', 'Unlocks'),        s.unlocks  == null ? '—' : s.unlocks,  abT('admin.kpi.unlocks_sub', 'recent')) +
-                pluginKpi(abT('admin.kpi.status', 'Plugin status'),  s.statusLabel || abT('admin.kpi.active', 'Active'), abT('admin.kpi.status_sub', 'live')) +
+                pluginKpi(abT('admin.kpi.users', 'Users tracked'),  s.users    == null ? '—' : s.users,    abT('admin.kpi.users_sub', 'profiles'),   'admin.kpi.users',  'admin.kpi.users_sub') +
+                pluginKpi(abT('admin.kpi.badges', 'Badges defined'), s.badges   == null ? '—' : s.badges,   abT('admin.kpi.badges_sub', 'configured'), 'admin.kpi.badges', 'admin.kpi.badges_sub') +
+                pluginKpi(abT('recap.unlocks', 'Unlocks'),        s.unlocks  == null ? '—' : s.unlocks,  abT('admin.kpi.unlocks_sub', 'recent'),   'recap.unlocks',    'admin.kpi.unlocks_sub') +
+                pluginKpi(abT('admin.kpi.status', 'Plugin status'),  statusText(s.statusLabel), abT('admin.kpi.status_sub', 'live'), 'admin.kpi.status', 'admin.kpi.status_sub', statusKey(s.statusLabel)) +
             '</div>';
     }
-    function pluginKpi(label, value, sub) {
+    /* labelKey / subKey / valueKey are the dictionary keys behind the three
+       strings. They ride along as data-i18n so the applier can relabel the KPI
+       when the language changes, instead of only on the initial render. */
+    function pluginKpi(label, value, sub, labelKey, subKey, valueKey) {
         return '<div class="abPluginHeroKpi">' +
-            '<div class="abPluginHeroKpiLabel">' + label + '</div>' +
-            '<div class="abPluginHeroKpiValue">' + escapeHtml(String(value)) + '</div>' +
-            (sub ? '<div class="abPluginHeroKpiSub">' + sub + '</div>' : '') +
+            '<div class="abPluginHeroKpiLabel"' + i18nAttr(labelKey) + '>' + label + '</div>' +
+            '<div class="abPluginHeroKpiValue"' + i18nAttr(valueKey) + '>' + escapeHtml(String(value)) + '</div>' +
+            (sub ? '<div class="abPluginHeroKpiSub"' + i18nAttr(subKey) + '>' + sub + '</div>' : '') +
         '</div>';
     }
 
@@ -1046,8 +1081,10 @@ font-size:0.88em;
             groupEl.innerHTML =
                 '<header class="abAdminGroupHead">' +
                     '<span class="abAdminGroupNum">' + meta.num + '</span>' +
-                    '<h2 class="abAdminGroupTitle">' + escapeHtml(abT(meta.titleKey, meta.title)) + '</h2>' +
-                    '<span class="abAdminGroupSub">' + escapeHtml(abT(meta.subKey, meta.sub)) + '</span>' +
+                    /* data-i18n so a language switch relabels these too; abT
+                       already covers the initial paint. */
+                    '<h2 class="abAdminGroupTitle"' + i18nAttr(meta.titleKey) + '>' + escapeHtml(abT(meta.titleKey, meta.title)) + '</h2>' +
+                    '<span class="abAdminGroupSub"' + i18nAttr(meta.subKey) + '>' + escapeHtml(abT(meta.subKey, meta.sub)) + '</span>' +
                 '</header>' +
                 '<div class="abAdminGroupBody ' + meta.cols + '"></div>';
             adminWrap.appendChild(groupEl);
@@ -1077,8 +1114,8 @@ font-size:0.88em;
         personalEyebrow.className = 'abPersonalEyebrow';
         personalEyebrow.innerHTML =
             '<span class="abPersonalEyebrowNum">05</span>' +
-            '<h2 class="abPersonalEyebrowTitle">Your achievements</h2>' +
-            '<span class="abPersonalEyebrowSub">admin operator view</span>';
+            '<h2 class="abPersonalEyebrowTitle">' + escapeHtml(abT('admin.personal.title', 'Your achievements')) + '</h2>' +
+            '<span class="abPersonalEyebrowSub">' + escapeHtml(abT('admin.personal.sub', 'admin operator view')) + '</span>';
         personalSection.appendChild(personalEyebrow);
 
         var personalHero = document.createElement('div');
@@ -2451,24 +2488,49 @@ font-size:0.88em;
         // matching Plugin.DefaultLanguageCode and the server-side default.
         return supported.indexOf(nav) >= 0 ? nav : 'zh';
     }
+    /* True when every element child is the decorative glyph the revamp
+       restructure prepends to each <summary>. Such an element is a label with
+       an icon, not a rendered container. */
+    function isGlyphOnlyLabel(el) {
+        var kids = el.children;
+        if (!kids || kids.length === 0) return false;
+        for (var i = 0; i < kids.length; i++) {
+            if (!kids[i].classList || !kids[i].classList.contains('abPanelGlyph')) return false;
+        }
+        return true;
+    }
+
+    /* Rewrites only the text around that glyph, so the icon survives. */
+    function writeLabelText(el, text) {
+        for (var i = el.childNodes.length - 1; i >= 0; i--) {
+            if (el.childNodes[i].nodeType === 3) el.removeChild(el.childNodes[i]);
+        }
+        el.appendChild(document.createTextNode(' ' + text));
+    }
+
     function apply(dict) {
         if (!dict) return;
         _abAdminDict = dict;
         var nodes = document.querySelectorAll('[data-i18n]');
         for (var i = 0; i < nodes.length; i++) {
-            // Same hazard as the standalone page: setting textContent on a
-            // container with child elements nukes them. Skip populated
-            // containers so rendered admin panels (custom badges list,
-            // catalog, audit log etc.) stay populated after translation.
-            if (nodes[i].children && nodes[i].children.length > 0) continue;
             var key = nodes[i].getAttribute('data-i18n');
             // common.loading is a placeholder that live renderers overwrite.
             // Re-applying it on a later pass would clobber that content, so it
             // is skipped here exactly as standalone.js skips it.
             if (key === 'common.loading') continue;
-            if (key && dict[key]) {
-                nodes[i].textContent = dict[key];
+            if (!key || !dict[key]) continue;
+            // Same hazard as the standalone page: setting textContent on a
+            // container with child elements nukes them. Skip populated
+            // containers so rendered admin panels (custom badges list,
+            // catalog, audit log etc.) stay populated after translation.
+            if (nodes[i].children && nodes[i].children.length > 0) {
+                // ...but a <summary> has children only because the restructure
+                // prepended its icon. Skipping it left every section title in
+                // English, so label it around the glyph instead.
+                if (isGlyphOnlyLabel(nodes[i])) writeLabelText(nodes[i], dict[key]);
+                continue;
             }
+            nodes[i].textContent = dict[key];
         }
         // Placeholders: data-i18n-placeholder="admin.something"
         var phNodes = document.querySelectorAll('[data-i18n-placeholder]');

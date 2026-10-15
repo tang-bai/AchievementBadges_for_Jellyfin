@@ -1471,5 +1471,15 @@
   "stats.unequip": "Unequip",
   "stats.everything_unlocked": "Everything unlocked.",
   "ui.toggle.tooltip": "Toggle Revamp / Classic UI",
-  "admin.msg.no_user_selected": "No user selected"
+  "admin.msg.no_user_selected": "No user selected",
+  "admin.personal.title": "Your achievements",
+  "admin.personal.sub": "admin operator view",
+  "ui.style.classic": "Classic",
+  "ui.style.revamp": "Revamp",
+  "admin.status.disabled": "Disabled",
+  "admin.status.restart": "Needs restart",
+  "admin.status.malfunctioned": "Malfunctioned",
+  "admin.status.not_supported": "Not supported",
+  "admin.status.superceded": "Superceded",
+  "admin.status.deleted": "Deleted"
 }

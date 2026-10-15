@@ -1471,5 +1471,15 @@
   "stats.unequip": "Desequipar",
   "stats.everything_unlocked": "Tudo desbloqueado.",
   "ui.toggle.tooltip": "Alternar entre a interface Revamp e Clássica",
-  "admin.msg.no_user_selected": "Nenhum usuário selecionado"
+  "admin.msg.no_user_selected": "Nenhum usuário selecionado",
+  "admin.personal.title": "Suas conquistas",
+  "admin.personal.sub": "visão de operador",
+  "ui.style.classic": "Clássico",
+  "ui.style.revamp": "Renovado",
+  "admin.status.disabled": "Desativado",
+  "admin.status.restart": "Requer reinicialização",
+  "admin.status.malfunctioned": "Com falha",
+  "admin.status.not_supported": "Não compatível",
+  "admin.status.superceded": "Substituído",
+  "admin.status.deleted": "Excluído"
 }

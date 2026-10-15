@@ -248,6 +248,26 @@ public class Jellyfin12ShellTests
         Assert.DoesNotContain("tr('filter.by_rarity'", html, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void TheAdminApplierStillLabelsSummariesThatCarryThePanelGlyph()
+    {
+        // Two rules collided. The revamp restructure prepends a decorative
+        // .abPanelGlyph to every <summary>, and the translation applier skips
+        // elements that have child elements so it never nukes a rendered panel
+        // by setting textContent on it. Every section title is a <summary>, so
+        // every one of them kept its English text. The skip now has to tell a
+        // labelled icon apart from a populated container.
+        var html = ReadEmbedded("Pages.index.html");
+
+        Assert.Contains("summary.insertAdjacentHTML('afterbegin',", html, StringComparison.Ordinal);
+        Assert.Contains("function isGlyphOnlyLabel(el) {", html, StringComparison.Ordinal);
+        Assert.Contains("function writeLabelText(el, text) {", html, StringComparison.Ordinal);
+        Assert.Contains(
+            "if (isGlyphOnlyLabel(nodes[i])) writeLabelText(nodes[i], dict[key]);",
+            html,
+            StringComparison.Ordinal);
+    }
+
     private static int CountOf(string text, string needle)
     {
         var count = 0;

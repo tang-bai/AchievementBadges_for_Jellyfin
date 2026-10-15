@@ -1471,5 +1471,15 @@
   "stats.unequip": "Rimuovi",
   "stats.everything_unlocked": "Tutto sbloccato.",
   "ui.toggle.tooltip": "Alterna tra interfaccia Revamp e Classica",
-  "admin.msg.no_user_selected": "Nessun utente selezionato"
+  "admin.msg.no_user_selected": "Nessun utente selezionato",
+  "admin.personal.title": "I tuoi obiettivi",
+  "admin.personal.sub": "vista operatore",
+  "ui.style.classic": "Classico",
+  "ui.style.revamp": "Rinnovato",
+  "admin.status.disabled": "Disabilitato",
+  "admin.status.restart": "Riavvio necessario",
+  "admin.status.malfunctioned": "Malfunzionamento",
+  "admin.status.not_supported": "Non supportato",
+  "admin.status.superceded": "Sostituito",
+  "admin.status.deleted": "Eliminato"
 }

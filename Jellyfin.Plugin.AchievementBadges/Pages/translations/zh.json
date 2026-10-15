@@ -1471,5 +1471,15 @@
   "stats.unequip": "卸下",
   "stats.everything_unlocked": "已全部解锁。",
   "ui.toggle.tooltip": "切换改版 / 经典界面",
-  "admin.msg.no_user_selected": "未选择用户"
+  "admin.msg.no_user_selected": "未选择用户",
+  "admin.personal.title": "你的成就",
+  "admin.personal.sub": "管理员视角",
+  "ui.style.classic": "经典",
+  "ui.style.revamp": "改版",
+  "admin.status.disabled": "已禁用",
+  "admin.status.restart": "需重启",
+  "admin.status.malfunctioned": "运行异常",
+  "admin.status.not_supported": "不受支持",
+  "admin.status.superceded": "已被取代",
+  "admin.status.deleted": "已删除"
 }

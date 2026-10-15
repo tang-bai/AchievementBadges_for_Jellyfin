@@ -1471,5 +1471,15 @@
   "stats.unequip": "外す",
   "stats.everything_unlocked": "すべて解除済みです。",
   "ui.toggle.tooltip": "リバンプ / クラシック UI を切り替え",
-  "admin.msg.no_user_selected": "ユーザーが選択されていません"
+  "admin.msg.no_user_selected": "ユーザーが選択されていません",
+  "admin.personal.title": "あなたの実績",
+  "admin.personal.sub": "管理者ビュー",
+  "ui.style.classic": "クラシック",
+  "ui.style.revamp": "リニューアル",
+  "admin.status.disabled": "無効",
+  "admin.status.restart": "要再起動",
+  "admin.status.malfunctioned": "動作異常",
+  "admin.status.not_supported": "未対応",
+  "admin.status.superceded": "置き換え済み",
+  "admin.status.deleted": "削除済み"
 }

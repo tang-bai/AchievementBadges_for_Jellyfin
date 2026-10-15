@@ -1471,5 +1471,15 @@
   "stats.unequip": "Ablegen",
   "stats.everything_unlocked": "Alles freigeschaltet.",
   "ui.toggle.tooltip": "Zwischen Revamp- und klassischer UI wechseln",
-  "admin.msg.no_user_selected": "Kein Benutzer ausgewählt"
+  "admin.msg.no_user_selected": "Kein Benutzer ausgewählt",
+  "admin.personal.title": "Deine Erfolge",
+  "admin.personal.sub": "Administrator-Ansicht",
+  "ui.style.classic": "Klassisch",
+  "ui.style.revamp": "Neugestaltung",
+  "admin.status.disabled": "Deaktiviert",
+  "admin.status.restart": "Neustart erforderlich",
+  "admin.status.malfunctioned": "Fehlfunktion",
+  "admin.status.not_supported": "Nicht unterstützt",
+  "admin.status.superceded": "Abgelöst",
+  "admin.status.deleted": "Gelöscht"
 }

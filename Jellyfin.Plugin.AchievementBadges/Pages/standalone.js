@@ -299,7 +299,12 @@
         // belt-and-braces declarations below pin every edge AND set explicit
         // 100vw/100vh so no ancestor can clip us, with !important so a host
         // CSS reset can't override the layout properties.
-        s.textContent = '#' + ROOT_ID + '{position:fixed !important;top:0 !important;right:0 !important;bottom:0 !important;left:0 !important;width:100vw !important;height:100vh !important;max-width:none !important;max-height:none !important;margin:0 !important;z-index:999999;overflow-y:auto;padding:2em;background:var(--theme-body-background,#181818);color:#fff;font-family:inherit;color-scheme:dark;box-sizing:border-box;}' +
+        /* font-size:max(1em,16px) is a FLOOR, not a fixed size: 1em is the
+           inherited size, so the host's own font wins when it is already 16px
+           or larger and we only step in when a Jellyfin container hands us
+           something smaller. Everything on this page is sized in em, so the
+           whole scale moves with this one declaration. */
+        s.textContent = '#' + ROOT_ID + '{position:fixed !important;top:0 !important;right:0 !important;bottom:0 !important;left:0 !important;width:100vw !important;height:100vh !important;max-width:none !important;max-height:none !important;margin:0 !important;z-index:999999;overflow-y:auto;padding:2em;background:var(--theme-body-background,#181818);color:#fff;font-family:inherit;font-size:max(1em,16px);color-scheme:dark;box-sizing:border-box;}' +
             /* v1.8.48: Classic-mode styling for the Classic/Revamp toggle button.
                Lives in standalone's own injectStyles so the button looks correct
                even when styles-revamp.css isn't loaded. */
@@ -315,7 +320,7 @@
             '#' + ROOT_ID + ' .ab-select{background-image:url(\'data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 16 16%22><path fill=%22%23fff%22 d=%22M4 6l4 4 4-4z%22/></svg>\');background-repeat:no-repeat;background-position:right 0.7em center;padding-right:2em;}' +
             '#' + ROOT_ID + ' .ab-select option{background:#181b24;color:#fff;}' +
             '#' + ROOT_ID + ' .ab-input:focus,#' + ROOT_ID + ' .ab-select:focus{outline:none;border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.25);}' +
-            '#' + ROOT_ID + ' .ab-badge-pts{font-size:0.88em;font-weight:800;padding:0.35em 0.75em;border-radius:999px;background:linear-gradient(135deg,rgba(102,126,234,0.3),rgba(118,75,162,0.3));border:1px solid rgba(102,126,234,0.45);color:#d8e0ff;white-space:nowrap;letter-spacing:0.02em;box-shadow:0 0 12px rgba(102,126,234,0.15);}' +
+            '#' + ROOT_ID + ' .ab-badge-pts{font-size:0.95em;font-weight:800;padding:0.35em 0.75em;border-radius:999px;background:linear-gradient(135deg,rgba(102,126,234,0.3),rgba(118,75,162,0.3));border:1px solid rgba(102,126,234,0.45);color:#d8e0ff;white-space:nowrap;letter-spacing:0.02em;box-shadow:0 0 12px rgba(102,126,234,0.15);}' +
             // Leaderboard podium
             '#' + ROOT_ID + ' .ab-lb-podium{display:flex;justify-content:center;align-items:flex-end;gap:0.75em;padding:1.5em 0.5em 0.5em;}' +
             '#' + ROOT_ID + ' .ab-lb-podium-col{flex:1;max-width:170px;display:flex;flex-direction:column;align-items:center;gap:0.4em;}' +
@@ -566,10 +571,10 @@
             '@keyframes abToastFocusPulse{0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,0.2);}50%{box-shadow:0 0 0 10px rgba(251,191,36,0.28),0 12px 34px rgba(0,0,0,0.38);}}' +
             '#' + ROOT_ID + ' .ab-card-h{display:flex;gap:0.8em;align-items:center;margin-bottom:0.7em;}' +
             '#' + ROOT_ID + ' .ab-card-icon{width:42px;height:42px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.1);font-size:1.2em;flex-shrink:0;}' +
-            '#' + ROOT_ID + ' .ab-card-title{font-size:1.05em;font-weight:700;}' +
-            '#' + ROOT_ID + ' .ab-card-meta{font-size:0.92em;opacity:0.9;}' +
-            '#' + ROOT_ID + ' .ab-desc{margin-top:0.5em;line-height:1.45;}' +
-            '#' + ROOT_ID + ' .ab-prog-text{display:flex;justify-content:space-between;font-size:0.92em;margin:0.7em 0 0.35em;opacity:0.8;}' +
+            '#' + ROOT_ID + ' .ab-card-title{font-size:1.18em;font-weight:700;line-height:1.25;}' +
+            '#' + ROOT_ID + ' .ab-card-meta{font-size:1em;opacity:0.9;}' +
+            '#' + ROOT_ID + ' .ab-desc{margin-top:0.5em;font-size:1.02em;line-height:1.55;}' +
+            '#' + ROOT_ID + ' .ab-prog-text{display:flex;justify-content:space-between;font-size:0.98em;margin:0.7em 0 0.35em;opacity:0.85;}' +
             '#' + ROOT_ID + ' .ab-prog-bar{height:10px;border-radius:999px;overflow:hidden;background:#0f1318;border:1px solid rgba(255,255,255,0.1);}' +
             '#' + ROOT_ID + ' .ab-prog-fill{height:100%;background:#60a5fa;}' +
             '#' + ROOT_ID + ' .ab-footer{margin-top:0.8em;display:flex;justify-content:space-between;align-items:center;gap:0.6em;flex-wrap:wrap;}' +

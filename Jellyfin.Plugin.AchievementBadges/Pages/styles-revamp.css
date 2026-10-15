@@ -91,6 +91,11 @@
     isolation: isolate;
     color: var(--rv-text);
     font-family: var(--rv-body);
+    /* Floor, not a fixed size: 1em is the inherited size, so this is a no-op
+       when the host already gives us 16px and only steps in when a Jellyfin
+       container hands us something smaller. Em-based type is hard to read in
+       CJK at small sizes, which is what made this noticeable. */
+    font-size: max(1em, 16px);
     font-feature-settings: 'ss01' on;
     background:
         radial-gradient(900px 480px at 8% -8%,  oklch(28% 0.12 152 / 0.18), transparent 60%),
@@ -852,8 +857,8 @@
 [data-ab-style="revamp"] .abBadgeTitle {
     font-family: var(--rv-display);
     font-weight: 600;
-    font-size: 1em;
-    line-height: 1.2;
+    font-size: 1.14em;
+    line-height: 1.25;
     color: var(--rv-text);
     overflow-wrap: anywhere;
     letter-spacing: -0.005em;
@@ -880,8 +885,8 @@
 }
 [data-ab-style="revamp"] .abBadgeDescription {
     color: var(--rv-text-muted);
-    font-size: 0.88em;
-    line-height: 1.55;
+    font-size: 0.98em;
+    line-height: 1.6;
     margin: var(--rv-2) 0 var(--rv-3);
     max-width: 60ch;
 }
