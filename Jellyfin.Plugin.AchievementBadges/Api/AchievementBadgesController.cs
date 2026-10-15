@@ -398,7 +398,7 @@ public class AchievementBadgesController : ControllerBase
     {
         if (double.IsNaN(completionPercent) || double.IsInfinity(completionPercent))
         {
-            return BadRequest(new { Message = "completionPercent must be a finite number." });
+            return BadRequest(new { Message = "completionPercent must be a finite number.", MessageKey = "err.completion_percent_finite" });
         }
         completionPercent = Math.Clamp(completionPercent, 0d, 100d);
 
@@ -489,7 +489,7 @@ public class AchievementBadgesController : ControllerBase
         // real account now says so, with a body the admin page can display.
         if (!Guid.TryParse(userId, out var userGuid))
         {
-            return BadRequest(new { Message = "The user id is not a valid GUID." });
+            return BadRequest(new { Message = "The user id is not a valid GUID.", MessageKey = "err.user_id_not_guid" });
         }
 
         bool exists;
@@ -497,7 +497,7 @@ public class AchievementBadgesController : ControllerBase
         catch { exists = false; }
         if (!exists)
         {
-            return NotFound(new { Message = "No Jellyfin account has this user id." });
+            return NotFound(new { Message = "No Jellyfin account has this user id.", MessageKey = "err.user_id_no_account" });
         }
 
         var badges = _badgeService.ResetBadgesForUser(userId);
@@ -552,7 +552,7 @@ public class AchievementBadgesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public ActionResult SendFriendRequest([FromRoute] string userId, [FromRoute] string friendUserId)
     {
-        if (!FriendsFeatureOn) return Ok(new { Success = false, Message = "Friends feature disabled by admin." });
+        if (!FriendsFeatureOn) return Ok(new { Success = false, Message = "Friends feature disabled by admin.", MessageKey = "err.friends_disabled" });
         var (ok, message) = _friendsService.SendRequest(userId, friendUserId);
         return Ok(new { Success = ok, Message = message });
     }
@@ -562,7 +562,7 @@ public class AchievementBadgesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public ActionResult AcceptFriendRequest([FromRoute] string userId, [FromRoute] string friendUserId)
     {
-        if (!FriendsFeatureOn) return Ok(new { Success = false, Message = "Friends feature disabled by admin." });
+        if (!FriendsFeatureOn) return Ok(new { Success = false, Message = "Friends feature disabled by admin.", MessageKey = "err.friends_disabled" });
         var (ok, message) = _friendsService.Accept(userId, friendUserId);
         return Ok(new { Success = ok, Message = message });
     }
@@ -572,7 +572,7 @@ public class AchievementBadgesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public ActionResult RemoveFriend([FromRoute] string userId, [FromRoute] string friendUserId)
     {
-        if (!FriendsFeatureOn) return Ok(new { Success = false, Message = "Friends feature disabled by admin." });
+        if (!FriendsFeatureOn) return Ok(new { Success = false, Message = "Friends feature disabled by admin.", MessageKey = "err.friends_disabled" });
         var (ok, message) = _friendsService.Remove(userId, friendUserId);
         return Ok(new { Success = ok, Message = message });
     }
@@ -633,7 +633,7 @@ public class AchievementBadgesController : ControllerBase
         [FromRoute] string otherUserId,
         [FromBody] SendMessageRequest body)
     {
-        if (!FriendsFeatureOn) return Ok(new { Success = false, Message = "Messaging disabled by admin." });
+        if (!FriendsFeatureOn) return Ok(new { Success = false, Message = "Messaging disabled by admin.", MessageKey = "err.messaging_disabled_admin" });
         var fromName = User.FindFirst("Jellyfin-User")?.Value
                        ?? User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value
                        ?? User.Identity?.Name
@@ -651,7 +651,7 @@ public class AchievementBadgesController : ControllerBase
         [FromRoute] string messageId,
         [FromBody] EditMessageRequest body)
     {
-        if (!FriendsFeatureOn) return Ok(new { Success = false, Message = "Messaging disabled." });
+        if (!FriendsFeatureOn) return Ok(new { Success = false, Message = "Messaging disabled.", MessageKey = "err.messaging_disabled" });
         var (ok, err, msg) = _messagingService.EditMessage(userId, messageId, body?.Text ?? string.Empty);
         return Ok(new { Success = ok, Message = err, Updated = msg });
     }
@@ -661,7 +661,7 @@ public class AchievementBadgesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public ActionResult DeleteMessage([FromRoute] string userId, [FromRoute] string messageId)
     {
-        if (!FriendsFeatureOn) return Ok(new { Success = false, Message = "Messaging disabled." });
+        if (!FriendsFeatureOn) return Ok(new { Success = false, Message = "Messaging disabled.", MessageKey = "err.messaging_disabled" });
         var (ok, err) = _messagingService.DeleteMessage(userId, messageId);
         return Ok(new { Success = ok, Message = err });
     }
@@ -671,7 +671,7 @@ public class AchievementBadgesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public ActionResult ClearDmByOther([FromRoute] string userId, [FromRoute] string otherUserId)
     {
-        if (!FriendsFeatureOn) return Ok(new { Success = false, Message = "Messaging disabled." });
+        if (!FriendsFeatureOn) return Ok(new { Success = false, Message = "Messaging disabled.", MessageKey = "err.messaging_disabled" });
         var (ok, deleted) = _messagingService.ClearDmByOtherUser(userId, otherUserId);
         return Ok(new { Success = ok, Deleted = deleted });
     }
@@ -685,7 +685,7 @@ public class AchievementBadgesController : ControllerBase
     {
         if (!FriendsFeatureOn) return Ok(new { Success = false });
         var c = _messagingService.GetConversation(userId, convId);
-        if (c == null) return Ok(new { Success = false, Message = "Not found or not a participant." });
+        if (c == null) return Ok(new { Success = false, Message = "Not found or not a participant.", MessageKey = "err.conversation_not_found" });
         return Ok(new { Success = true, Conversation = c });
     }
 
@@ -708,7 +708,7 @@ public class AchievementBadgesController : ControllerBase
         [FromRoute] string convId,
         [FromBody] SendMessageRequest body)
     {
-        if (!FriendsFeatureOn) return Ok(new { Success = false, Message = "Messaging disabled." });
+        if (!FriendsFeatureOn) return Ok(new { Success = false, Message = "Messaging disabled.", MessageKey = "err.messaging_disabled" });
         var fromName = User.FindFirst("Jellyfin-User")?.Value
                        ?? User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value
                        ?? User.Identity?.Name
@@ -722,7 +722,7 @@ public class AchievementBadgesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public ActionResult CreateGroup([FromRoute] string userId, [FromBody] CreateGroupRequest body)
     {
-        if (!FriendsFeatureOn) return Ok(new { Success = false, Message = "Messaging disabled." });
+        if (!FriendsFeatureOn) return Ok(new { Success = false, Message = "Messaging disabled.", MessageKey = "err.messaging_disabled" });
         var (ok, err, c) = _messagingService.CreateGroup(userId, body?.Title, body?.ParticipantIds ?? new List<string>());
         return Ok(new { Success = ok, Message = err, Conversation = c });
     }
@@ -789,16 +789,16 @@ public class AchievementBadgesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> UploadAttachment([FromRoute] string userId)
     {
-        if (!FriendsFeatureOn) return Ok(new { Success = false, Message = "Messaging disabled." });
+        if (!FriendsFeatureOn) return Ok(new { Success = false, Message = "Messaging disabled.", MessageKey = "err.messaging_disabled" });
         // Read from Request.Form directly to avoid model-binding quirks
         // (`[FromForm] IFormFile` occasionally fails on top of our other
         // content filters). This route only accepts multipart/form-data.
         if (!Request.HasFormContentType)
-            return Ok(new { Success = false, Message = "Upload must be multipart/form-data." });
+            return Ok(new { Success = false, Message = "Upload must be multipart/form-data.", MessageKey = "err.upload_multipart" });
         var form = await Request.ReadFormAsync().ConfigureAwait(false);
         var file = form.Files.Count > 0 ? form.Files[0] : null;
         if (file == null || file.Length == 0)
-            return Ok(new { Success = false, Message = "No file uploaded." });
+            return Ok(new { Success = false, Message = "No file uploaded.", MessageKey = "err.upload_no_file" });
         using var ms = new MemoryStream();
         await file.CopyToAsync(ms).ConfigureAwait(false);
         var (ok, err, att) = _messagingService.SaveAttachment(userId, file.FileName, file.ContentType, ms.ToArray(), null, null);
@@ -1063,13 +1063,13 @@ public class AchievementBadgesController : ControllerBase
     {
         if (request is null || string.IsNullOrWhiteSpace(request.BadgeId))
         {
-            return BadRequest(new { Message = "BadgeId is required." });
+            return BadRequest(new { Message = "BadgeId is required.", MessageKey = "err.badge_id_required" });
         }
 
         var plugin = Plugin.Instance;
         if (plugin is null)
         {
-            return BadRequest(new { Message = "Plugin instance not available." });
+            return BadRequest(new { Message = "Plugin instance not available.", MessageKey = "err.plugin_unavailable" });
         }
 
         var config = plugin.Configuration;
@@ -1100,7 +1100,7 @@ public class AchievementBadgesController : ControllerBase
         var plugin = Plugin.Instance;
         if (plugin is null)
         {
-            return BadRequest(new { Message = "Plugin instance not available." });
+            return BadRequest(new { Message = "Plugin instance not available.", MessageKey = "err.plugin_unavailable" });
         }
 
         var config = plugin.Configuration;
@@ -1154,7 +1154,7 @@ public class AchievementBadgesController : ControllerBase
     {
         if (!Guid.TryParse(userId, out var guid))
         {
-            return BadRequest(new { Message = "Invalid user id." });
+            return BadRequest(new { Message = "Invalid user id.", MessageKey = "err.invalid_user_id" });
         }
         var result = _libraryCompletionService.RecomputeForUser(guid);
         // [issue #24 follow-up] Recompute the discography percentages too.
@@ -1256,7 +1256,7 @@ public class AchievementBadgesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public ActionResult SaveUserPreferences([FromRoute] string userId, [FromBody] UserNotificationPreferences prefs)
     {
-        if (prefs is null) return BadRequest(new { Message = "Preferences payload required." });
+        if (prefs is null) return BadRequest(new { Message = "Preferences payload required.", MessageKey = "err.preferences_required" });
 
         // Normalise and bound any free-form string / int fields so a crafted
         // payload can't bloat the on-disk profile with megabytes of attacker-
@@ -1742,7 +1742,7 @@ public class AchievementBadgesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public ActionResult SaveAdminQuests([FromBody] AdminQuestsPayload payload)
     {
-        if (payload == null) return BadRequest(new { Message = "Payload required." });
+        if (payload == null) return BadRequest(new { Message = "Payload required.", MessageKey = "err.payload_required" });
         var plugin = Plugin.Instance;
         if (plugin is null) return BadRequest();
 
@@ -1957,15 +1957,15 @@ public class AchievementBadgesController : ControllerBase
         // otherwise lazy-create a brand new on-disk profile for any arbitrary
         // string, letting a caller bloat the profiles JSON with garbage ids.
         if (!Guid.TryParse(toUserId, out var toGuid))
-            return BadRequest(new { Message = "Invalid recipient id." });
+            return BadRequest(new { Message = "Invalid recipient id.", MessageKey = "err.invalid_recipient" });
         try
         {
             if (_userManager.GetUserById(toGuid) is null)
-                return BadRequest(new { Message = "Recipient not found." });
+                return BadRequest(new { Message = "Recipient not found.", MessageKey = "err.recipient_not_found" });
         }
         catch
         {
-            return BadRequest(new { Message = "Recipient not found." });
+            return BadRequest(new { Message = "Recipient not found.", MessageKey = "err.recipient_not_found" });
         }
 
         amount = Math.Clamp(amount, 1, 10_000);
@@ -2052,7 +2052,7 @@ public class AchievementBadgesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public ActionResult ImportProfile([FromRoute] string userId, [FromBody] UserAchievementProfile profile)
     {
-        if (profile is null) return BadRequest(new { Message = "Profile payload required." });
+        if (profile is null) return BadRequest(new { Message = "Profile payload required.", MessageKey = "err.profile_payload_required" });
 
         if (profile.Badges != null)
         {
@@ -2103,7 +2103,7 @@ public class AchievementBadgesController : ControllerBase
     public ActionResult GrantScore([FromRoute] string userId, [FromBody] GrantScoreRequest request)
     {
         var amount = request?.Amount ?? 0;
-        if (amount == 0) return BadRequest(new { Message = "Amount cannot be zero." });
+        if (amount == 0) return BadRequest(new { Message = "Amount cannot be zero.", MessageKey = "err.amount_zero" });
         var profile = _badgeService.PeekProfile(userId);
         if (profile is null) return NotFound();
         profile.ScoreBank += amount;
@@ -2125,7 +2125,7 @@ public class AchievementBadgesController : ControllerBase
         if (profile is null) return NotFound();
         if (!Models.PowerUpDefinitions.TryParse(type, out var puType))
         {
-            return BadRequest(new { Message = "Unknown power-up type. Expected XpBoost / DoubleCredit / StreakFreeze." });
+            return BadRequest(new { Message = "Unknown power-up type. Expected XpBoost / DoubleCredit / StreakFreeze.", MessageKey = "err.unknown_powerup" });
         }
         var count = Math.Max(1, request?.Count ?? 1);
         _powerUps.Grant(profile, puType, count);
@@ -2148,7 +2148,7 @@ public class AchievementBadgesController : ControllerBase
         var profile = _badgeService.PeekProfile(userId);
         if (profile is null) return NotFound();
         var id = request?.CosmeticId?.Trim() ?? string.Empty;
-        if (string.IsNullOrEmpty(id)) return BadRequest(new { Message = "CosmeticId required." });
+        if (string.IsNullOrEmpty(id)) return BadRequest(new { Message = "CosmeticId required.", MessageKey = "err.cosmetic_id_required" });
         if (profile.OwnedCosmetics.Contains(id))
         {
             return Ok(new { Success = true, AlreadyOwned = true, Owned = profile.OwnedCosmetics });
@@ -2212,7 +2212,7 @@ public class AchievementBadgesController : ControllerBase
         if (profile is null) return NotFound();
         if (!Models.PowerUpDefinitions.TryParse(type, out var puType))
         {
-            return BadRequest(new { Message = "Unknown power-up type. Expected XpBoost / DoubleCredit / StreakFreeze." });
+            return BadRequest(new { Message = "Unknown power-up type. Expected XpBoost / DoubleCredit / StreakFreeze.", MessageKey = "err.unknown_powerup" });
         }
         var (ok, message) = _powerUps.Use(profile, puType, DateTimeOffset.UtcNow);
         if (!ok)
@@ -2315,7 +2315,7 @@ public class AchievementBadgesController : ControllerBase
         if (profile is null) return NotFound();
         if (!Enum.TryParse<Models.CosmeticKind>(kind, ignoreCase: true, out var k))
         {
-            return BadRequest(new { Message = "Unknown kind. Expected ProfileTheme / BadgeFrame / RankTitle." });
+            return BadRequest(new { Message = "Unknown kind. Expected ProfileTheme / BadgeFrame / RankTitle.", MessageKey = "err.unknown_cosmetic_kind" });
         }
         var (ok, message) = _shop.Unequip(profile, k);
         if (!ok) return BadRequest(new { Message = message });
@@ -2340,7 +2340,7 @@ public class AchievementBadgesController : ControllerBase
         if (profile.DailyQuestRerollsUsed >= 1)
         {
             return StatusCode(StatusCodes.Status429TooManyRequests,
-                new { Message = "Daily quest reroll already used today. Comes back at UTC midnight." });
+                new { Message = "Daily quest reroll already used today. Comes back at UTC midnight.", MessageKey = "err.reroll_daily_used" });
         }
         var (ok, message, list) = _questService.RerollDaily(userId);
         if (!ok) return BadRequest(new { Message = message });
@@ -2376,7 +2376,7 @@ public class AchievementBadgesController : ControllerBase
         if (profile.WeeklyQuestRerollsUsed >= 1)
         {
             return StatusCode(StatusCodes.Status429TooManyRequests,
-                new { Message = "Weekly quest reroll already used this week. Resets Monday UTC." });
+                new { Message = "Weekly quest reroll already used this week. Resets Monday UTC.", MessageKey = "err.reroll_weekly_used" });
         }
         var (ok, message, list) = _questService.RerollWeekly(userId);
         if (!ok) return BadRequest(new { Message = message });

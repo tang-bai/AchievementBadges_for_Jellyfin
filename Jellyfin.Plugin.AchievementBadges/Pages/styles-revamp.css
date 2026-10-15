@@ -3608,8 +3608,13 @@ body.ab-revamp-fullwidth::after {
     padding: 18px 24px 16px !important;
     height: auto !important;
     border-radius: 0 !important;
-    font: 500 11px/1.4 var(--rv-mono) !important;
-    letter-spacing: 0.18em !important;
+    /* 11px was an editorial-chapter size that only worked in Latin caps; CJK
+       glyphs need more. The label is the thing being read, so it carries most
+       of the increase. Weight 700 as well: mono stacks commonly ship only
+       400/700, in which case 500 lands back on the regular face and CJK strokes
+       wash out at this size. The ::before chapter number inherits this weight. */
+    font: 700 15px/1.45 var(--rv-mono) !important;
+    letter-spacing: 0.12em !important;
     text-transform: uppercase !important;
     cursor: pointer !important;
     position: relative;
@@ -3624,7 +3629,7 @@ body.ab-revamp-fullwidth::after {
     counter-increment: rv-chapter;
     content: counter(rv-chapter, decimal-leading-zero);
     display: block;
-    font-size: 9px;
+    font-size: 11px;
     color: var(--rv-text-faint);
     margin-bottom: 6px;
     letter-spacing: 0.20em;
@@ -3857,9 +3862,12 @@ body.ab-revamp-fullwidth::after {
     border: 1px solid var(--rv-edge) !important;
     color: var(--rv-text-muted) !important;
     border-radius: 999px !important;
-    padding: 6px 12px !important;
-    font: 500 10px/1 var(--rv-mono) !important;
-    letter-spacing: 0.12em !important;
+    /* 10px was the smallest type on the page, on the button people actually
+       click. CJK glyphs lose their strokes well before Latin does. Bold for the
+       same reason as the tabs — a 500 request can land on a regular face. */
+    padding: 8px 15px !important;
+    font: 700 13px/1 var(--rv-mono) !important;
+    letter-spacing: 0.08em !important;
     text-transform: uppercase !important;
     cursor: pointer !important;
     transition: color var(--rv-fast) var(--rv-ease),
@@ -3873,15 +3881,17 @@ body.ab-revamp-fullwidth::after {
 #achievementBadgesStandaloneRoot[data-ab-style="revamp"] .ab-unlocked {
     color: var(--rv-emerald) !important;
     font-family: var(--rv-mono) !important;
-    font-size: 11px !important;
-    letter-spacing: 0.16em !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.10em !important;
     text-transform: uppercase !important;
 }
 #achievementBadgesStandaloneRoot[data-ab-style="revamp"] .ab-locked {
     color: oklch(70% 0.18 22) !important;
     font-family: var(--rv-mono) !important;
-    font-size: 11px !important;
-    letter-spacing: 0.16em !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.10em !important;
     text-transform: uppercase !important;
 }
 

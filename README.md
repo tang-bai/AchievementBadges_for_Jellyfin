@@ -19,6 +19,12 @@
   <img src="https://img.shields.io/badge/License-MIT-0b0b0b?style=for-the-badge&labelColor=000000&color=2b2b2b" />
 </p>
 
+<!-- Language switch. The Chinese README is a full translation that also
+     documents what this fork changed relative to upstream. -->
+<p align="center">
+  <a href="docs/README_CN.md"><img alt="简体中文" src="https://img.shields.io/badge/%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-%E4%B8%AD%E6%96%87%E6%96%87%E6%A1%A3-E50914?style=for-the-badge&labelColor=000000&color=E50914" /></a>
+</p>
+
 <p align="center">
   <a href="https://github.com/ZL154/AchievementBadges_for_Jellyfin/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/ZL154/AchievementBadges_for_Jellyfin/ci.yml?style=for-the-badge&labelColor=000000&label=CI" /></a>
   <a href="https://github.com/ZL154/AchievementBadges_for_Jellyfin/actions/workflows/codeql.yml"><img src="https://img.shields.io/github/actions/workflow/status/ZL154/AchievementBadges_for_Jellyfin/codeql.yml?style=for-the-badge&labelColor=000000&label=CodeQL" /></a>

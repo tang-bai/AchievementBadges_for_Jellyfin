@@ -111,4 +111,40 @@ public static class BadgeLocalizer
             string.IsNullOrWhiteSpace(entry.description) ? null : entry.description
         );
     }
+
+    private static readonly ConcurrentDictionary<string, Dictionary<string, string>?> _uiCache = new();
+
+    /// <summary>
+    /// Reads one string from the UI dictionary — <c>Pages/translations/{lang}.json</c>,
+    /// the same file the web client fetches. The server needs this for the few
+    /// fixed strings it writes into a response itself rather than taking from a
+    /// badge definition; the secret-badge placeholder is the only one today.
+    /// Those are UI chrome, not badge content, so they are not in
+    /// <c>badges.{lang}.json</c>. Falls back to <paramref name="fallback"/>.
+    /// </summary>
+    public static string UiText(string? lang, string key, string fallback)
+    {
+        var l = NormalizeLang(lang);
+        var dict = _uiCache.GetOrAdd(l, static k =>
+        {
+            var content = ResourceReader.ReadEmbeddedText(
+                "Jellyfin.Plugin.AchievementBadges.Pages.translations." + k + ".json");
+            if (string.IsNullOrWhiteSpace(content)) return null;
+            try
+            {
+                return JsonSerializer.Deserialize<Dictionary<string, string>>(content);
+            }
+            catch
+            {
+                return null;
+            }
+        });
+
+        if (dict != null && dict.TryGetValue(key, out var value) && !string.IsNullOrWhiteSpace(value))
+        {
+            return value;
+        }
+
+        return fallback;
+    }
 }

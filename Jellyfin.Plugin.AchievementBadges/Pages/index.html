@@ -2839,6 +2839,10 @@ font-size:0.88em;
                     var msg = tr('admin.msg.request_failed', 'Request failed: ') + response.status + where;
                     try {
                         var body = JSON.parse(text);
+                        // The server ships a stable MessageKey beside the English
+                        // Message; it cannot know this browser's language, so the
+                        // translation happens here.
+                        if (body && body.MessageKey) body.Message = _abMsgText(body);
                         if (body && body.Message) msg = body.Message + where;
                     } catch (e) {}
                     var err = new Error(msg);
@@ -2849,7 +2853,12 @@ font-size:0.88em;
             }
             if (response.status === 204) return null;
             return response.text().then(function (text) {
-                return text ? JSON.parse(text) : null;
+                if (!text) return null;
+                var body = JSON.parse(text);
+                if (body && typeof body === 'object' && body.MessageKey) {
+                    body.Message = _abMsgText(body);
+                }
+                return body;
             });
         });
     }
@@ -3553,6 +3562,21 @@ font-size:0.88em;
         var k = 'rarity.' + String(r).toLowerCase();
         var v = tr(k, null);
         return v || r;
+    }
+
+    /* Server responses carry a stable MessageKey (and sometimes MessageArgs)
+       beside the English Message, because the server cannot know this
+       browser's language. Resolve both here. */
+    function _abMsgText(body) {
+        if (!body) return '';
+        var text = body.MessageKey ? tr(body.MessageKey, body.Message || '') : (body.Message || '');
+        var args = body.MessageArgs;
+        if (args && args.length) {
+            for (var i = 0; i < args.length; i++) {
+                text = text.split('{' + i + '}').join(String(args[i]));
+            }
+        }
+        return text;
     }
 
     function renderCatalog(catalog) {

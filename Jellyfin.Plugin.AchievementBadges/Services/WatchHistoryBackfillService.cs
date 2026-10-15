@@ -69,13 +69,13 @@ public class WatchHistoryBackfillService
     {
         if (!Guid.TryParse(userId, out var userGuid))
         {
-            return new { Success = false, Message = "Invalid user ID." };
+            return new { Success = false, Message = "Invalid user ID.", MessageKey = "err.invalid_user_id" };
         }
 
         var user = _userManager.GetUserById(userGuid);
         if (user == null)
         {
-            return new { Success = false, Message = "User not found." };
+            return new { Success = false, Message = "User not found.", MessageKey = "err.user_not_found" };
         }
 
         return RunBackfillForUser(userGuid, user.Username);
@@ -141,19 +141,19 @@ public class WatchHistoryBackfillService
     {
         if (!Guid.TryParse(userId, out var userGuid))
         {
-            return new { Success = false, Message = "Invalid user ID." };
+            return new { Success = false, Message = "Invalid user ID.", MessageKey = "err.invalid_user_id" };
         }
 
         var user = _userManager.GetUserById(userGuid);
         if (user is null)
         {
-            return new { Success = false, Message = "User not found." };
+            return new { Success = false, Message = "User not found.", MessageKey = "err.user_not_found" };
         }
 
         var config = Plugin.Instance?.Configuration;
         if (!TracearrClient.IsConfigured(config?.TracearrUrl, config?.TracearrApiToken))
         {
-            return new { Success = false, Message = "Tracearr is not configured." };
+            return new { Success = false, Message = "Tracearr is not configured.", MessageKey = "err.tracearr_not_configured" };
         }
 
         // Same gate as the scan: one sync per user at a time, so two clicks
@@ -183,8 +183,14 @@ public class WatchHistoryBackfillService
                     PlaysCredited = 0,
                     Adopted = adopted,
                     Success = true,
-                    Message = "First sync for this user: " + adopted
-                        + " plays recorded as already counted, none credited. Run a watch history scan if they were never counted."
+                    // {0} rather than concatenation so the sentence can be
+                    // reordered by a translation; the client substitutes it.
+                    Message = string.Format(
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        "First sync for this user: {0} plays recorded as already counted, none credited. Run a watch history scan if they were never counted.",
+                        adopted),
+                    MessageKey = "err.first_sync",
+                    MessageArgs = new object[] { adopted }
                 };
             }
 

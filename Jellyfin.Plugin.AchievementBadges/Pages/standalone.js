@@ -52,6 +52,21 @@
     // under the "category.<Name>" key and fall back to the English label
     // when no translation exists. Also slug-variants the name so both
     // "Weekend Watching" and a category.weekend_watching key work.
+    /* Server responses carry a stable MessageKey beside the English Message.
+       The server cannot know which language this browser is set to, so it
+       ships the key and we translate it here, falling back to the English
+       text when the key is unknown. */
+    function abMsgText(obj) {
+        if (!obj) return '';
+        var text = obj.MessageKey ? tr(obj.MessageKey, obj.Message || '') : (obj.Message || '');
+        // A few messages carry values ({0}) so a translation can reorder them.
+        if (obj.MessageArgs && obj.MessageArgs.length) {
+            for (var i = 0; i < obj.MessageArgs.length; i++) {
+                text = text.split('{' + i + '}').join(String(obj.MessageArgs[i]));
+            }
+        }
+        return text;
+    }
     function trCategory(cat) {
         if (cat == null || cat === '') return '';
         var raw = String(cat);
@@ -213,12 +228,21 @@
             if (!r.ok) {
                 return r.text().then(function (t) {
                     var msg = 'Error ' + r.status;
-                    try { var b = JSON.parse(t); if (b && b.Message) msg = b.Message; } catch (e) {}
+                    try { var b = JSON.parse(t); if (b && b.MessageKey) b.Message = abMsgText(b); if (b && b.Message) msg = b.Message; } catch (e) {}
                     throw new Error(msg);
                 });
             }
             if (r.status === 204) return null;
-            return r.text().then(function (t) { return t ? JSON.parse(t) : null; });
+            // Translate MessageKey in place so every caller of fetchJson()
+            // shows the localised text without touching its own display code.
+            return r.text().then(function (t) {
+                if (!t) return null;
+                var body = JSON.parse(t);
+                if (body && typeof body === 'object' && body.MessageKey) {
+                    body.Message = abMsgText(body);
+                }
+                return body;
+            });
         });
     }
 
@@ -1305,16 +1329,16 @@
                 '<div id="abSaPanelQuests" class="ab-panel" style="display:none;">' +
                     '<div class="ab-panel-card">' +
                         '<div style="display:flex; align-items:center; justify-content:space-between; gap:0.6em; flex-wrap:wrap;">' +
-                            '<h3 style="margin:0;">Daily quests</h3>' +
+                            '<h3 style="margin:0;" data-i18n="quests.daily">Daily quests</h3>' +
                             '<div id="abSaDailyRerollSlot"></div>' +
                         '</div>' +
-                        '<div class="ab-muted" style="font-size:0.85em; margin:0.4em 0 0.85em;">Resets at midnight UTC. Everyone shares the same daily challenge.</div>' +
+                        '<div class="ab-muted" style="font-size:0.85em; margin:0.4em 0 0.85em;" data-i18n="quests.daily_desc">Resets at midnight UTC. Everyone shares the same daily challenge.</div>' +
                         '<div id="abSaDailyQuest" data-i18n="common.loading">Loading...</div>' +
                         '<div style="display:flex; align-items:center; justify-content:space-between; gap:0.6em; margin-top:1.6em; flex-wrap:wrap;">' +
-                            '<h3 style="margin:0;">Weekly quests</h3>' +
+                            '<h3 style="margin:0;" data-i18n="quests.weekly">Weekly quests</h3>' +
                             '<div id="abSaWeeklyRerollSlot"></div>' +
                         '</div>' +
-                        '<div class="ab-muted" style="font-size:0.85em; margin:0.4em 0 0.85em;">Resets every Monday UTC. Bigger reward, harder target.</div>' +
+                        '<div class="ab-muted" style="font-size:0.85em; margin:0.4em 0 0.85em;" data-i18n="quests.weekly_desc">Resets every Monday UTC. Bigger reward, harder target.</div>' +
                         '<div id="abSaWeeklyQuest" data-i18n="common.loading">Loading...</div>' +
                     '</div>' +
                 '</div>' +
@@ -1585,7 +1609,9 @@
         var usedLabel  = (period === 'weekly')
             ? tr('loadout.reroll.used_weekly', 'REROLLED THIS WEEK')
             : tr('loadout.reroll.used_daily', 'REROLLED TODAY');
-        var tip        = (period === 'weekly') ? 'Reroll this week\'s quests (1 per ISO week)' : 'Reroll today\'s daily set (1 per UTC day)';
+        var tip        = (period === 'weekly')
+            ? tr('loadout.reroll.tooltip_weekly', 'Reroll this week\'s quests (1 per ISO week)')
+            : tr('loadout.reroll.tooltip_daily', 'Reroll today\'s daily set (1 per UTC day)');
         if (canReroll) {
             slot.innerHTML = '<button type="button" class="ab-quest-reroll"' +
                 ' title="' + tip + '"' +
@@ -2176,8 +2202,8 @@
                     '<span class="ab-store-card-price-unit">score</span>' +
                 '</div>' +
                 (afford
-                    ? '<button type="button" class="ab-store-cta sm" data-lo-buy="' + (c.Id || '') + '">BUY</button>'
-                    : '<button type="button" class="ab-store-cta sm off" disabled>LOCKED</button>'
+                    ? '<button type="button" class="ab-store-cta sm" data-lo-buy="' + (c.Id || '') + '">' + tr('loadout.shop.buy', 'BUY') + '</button>'
+                    : '<button type="button" class="ab-store-cta sm off" disabled>' + tr('loadout.shop.locked', 'LOCKED') + '</button>'
                 );
             }
 
@@ -4165,10 +4191,16 @@
             }
         }).catch(function () {});
 
-        // Resolve effective language: user preference wins ("default" means
-        // fall back to admin-configured DefaultLanguage from public-config).
-        // We kick this off early but don't block other requests on it.
-        Promise.all([
+        /* Resolve the effective language and load its dictionary as part of the
+           main batch below. The badge / quest / leaderboard markup is built from
+           string templates with tr() calls baked in when it renders, so a render
+           that runs before the dictionary lands keeps its English fallbacks for
+           good: applyStaticTranslations() only rewrites [data-i18n] markers and
+           never revisits that markup. That is what left "Progress", "LOCKED",
+           "EQUIP" and the rarity/category labels English on an otherwise Chinese
+           page. Riding the same Promise.all costs no extra wall-clock time — it
+           overlaps the data fetches — and removes the race. */
+        var langReady = Promise.all([
             fetchJson('Plugins/AchievementBadges/users/' + userId + '/preferences').catch(function () { return null; }),
             fetchJson('Plugins/AchievementBadges/public-config').catch(function () { return null; })
         ]).then(function (parts) {
@@ -4177,10 +4209,7 @@
             var userLang = (p.Language || p.language || 'default').toString().toLowerCase();
             var adminLang = (cfg.DefaultLanguage || cfg.defaultLanguage || AB_DEFAULT_LANG).toString().toLowerCase();
             var effective = (userLang === 'default' || !userLang) ? adminLang : userLang;
-            return loadTranslations(effective).then(function () {
-                applyStaticTranslations();
-                try { syncRevampSectionLabel(); } catch (e) {}
-            });
+            return loadTranslations(effective);
         }).catch(function () {});
 
         // Fetch and show welcome message if configured, and apply feature-flag tab hiding
@@ -4214,10 +4243,18 @@
             fetchJson('Plugins/AchievementBadges/users/' + userId + '/bank').catch(function () { return null; }),
             fetchJson('Plugins/AchievementBadges/users/' + userId + '/badge-eta').catch(function () { return null; }),
             fetchJson('Plugins/AchievementBadges/users/' + userId + '/streak-calendar?weeks=53').catch(function () { return null; }),
-            fetchJson('Plugins/AchievementBadges/users/' + userId + '/preferences').catch(function () { return null; })
+            fetchJson('Plugins/AchievementBadges/users/' + userId + '/preferences').catch(function () { return null; }),
+            // Dictionary last, but awaited with everything else: everything
+            // below bakes tr() into its markup.
+            langReady
         ]).then(function (results) {
             var badges = results[0], summary = results[1], equipped = results[2], lb = results[3], stats = results[4], rank = results[5];
             var titleData = results[6], bankData = results[7], etaData = results[8], streakData = results[9], prefsData = results[10];
+
+            // Paint the static markers now that the dictionary is in hand, then
+            // the dynamic markup below agrees with them instead of fighting them.
+            applyStaticTranslations();
+            try { syncRevampSectionLabel(); } catch (e) {}
 
             badgeEtaMap = {};
             if (etaData && etaData.Etas) {

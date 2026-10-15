@@ -135,6 +135,20 @@
         }
         return fallback != null ? fallback : key;
     }
+    /* Server responses carry a stable MessageKey beside the English Message:
+       the server cannot know this browser's language, so messages are
+       translated here. Returns '' when there is no message at all, which keeps
+       the existing  "msg || tr('fallback')"  call sites working unchanged. */
+    function abMsgText(res){
+        if (!res) return '';
+        var text = res.MessageKey ? tr(res.MessageKey, res.Message || '') : (res.Message || '');
+        if (res.MessageArgs && res.MessageArgs.length){
+            for (var i = 0; i < res.MessageArgs.length; i++){
+                text = text.split('{' + i + '}').join(String(res.MessageArgs[i]));
+            }
+        }
+        return text;
+    }
     function loadSidebarTranslations(){
         var uid = getUserId();
         var prefP = uid
@@ -2148,7 +2162,7 @@
             .then(function(r){ return r.ok ? r.json() : null; })
             .then(function(res){
                 if (res && res.Success) loadChatMessages();
-                else if (res && res.Message) showChatError(res.Message);
+                else if (abMsgText(res)) showChatError(abMsgText(res));
                 else cancel();
             })
             .catch(function(){ cancel(); });
@@ -2367,7 +2381,7 @@
         .then(function(r){ return r.ok ? r.json() : null; })
         .then(function(res){
             if (!res || !res.Success) {
-                showChatError((res && res.Message) || tr('friends.send_failed', 'Could not send message.'));
+                showChatError(abMsgText(res) || tr('friends.send_failed', 'Could not send message.'));
                 if (send) send.disabled = false;
                 return;
             }
@@ -2500,13 +2514,13 @@
             return r.text().then(function(txt){
                 var res = null;
                 try { res = JSON.parse(txt); } catch (e) {}
-                if (!r.ok) throw new Error('HTTP ' + r.status + ': ' + (res && res.Message ? res.Message : (txt || '').slice(0, 200)));
+                if (!r.ok) throw new Error('HTTP ' + r.status + ': ' + (abMsgText(res) || (txt || '').slice(0, 200)));
                 return res;
             });
         })
         .then(function(res){
             if (!res || !res.Success) {
-                showChatError((res && res.Message) || tr('friends.upload_failed','Upload failed.'));
+                showChatError(abMsgText(res) || tr('friends.upload_failed','Upload failed.'));
                 clearAttachmentPreview();
                 return;
             }
@@ -2950,7 +2964,7 @@
                     { method: 'POST', headers: authHeaders(), credentials: 'include' })
                 .then(function(r){ return r.ok ? r.json() : null; })
                 .then(function(res){
-                    if (!res || !res.Success) { showToast((res && res.Message) || tr('friends.action_failed','Action failed.'),''); return; }
+                    if (!res || !res.Success) { showToast(abMsgText(res) || tr('friends.action_failed','Action failed.'),''); return; }
                     showToast(tr('friends.promoted_toast','Promoted to admin'),'');
                     refresh().then(function(rr){ render(overlay, rr); });
                 });
@@ -2964,7 +2978,7 @@
                             { method: 'DELETE', headers: authHeaders(), credentials: 'include' })
                         .then(function(r){ return r.ok ? r.json() : null; })
                         .then(function(res){
-                            if (!res || !res.Success) { showToast((res && res.Message) || tr('friends.action_failed','Action failed.'),''); return; }
+                            if (!res || !res.Success) { showToast(abMsgText(res) || tr('friends.action_failed','Action failed.'),''); return; }
                             showToast(tr('friends.demoted_toast','Removed admin'),'');
                             refresh().then(function(rr){ render(overlay, rr); });
                         });
@@ -2980,7 +2994,7 @@
                             { method: 'DELETE', headers: authHeaders(), credentials: 'include' })
                         .then(function(r){ return r.ok ? r.json() : null; })
                         .then(function(res){
-                            if (!res || !res.Success) { showToast((res && res.Message) || tr('friends.action_failed','Action failed.'),''); return; }
+                            if (!res || !res.Success) { showToast(abMsgText(res) || tr('friends.action_failed','Action failed.'),''); return; }
                             showToast(tr('friends.kicked_toast','Removed from group'),'');
                             // Update in-memory participant list so chat header reflects change
                             _chatParticipants = (_chatParticipants || []).filter(function(p){
@@ -3063,7 +3077,7 @@
                     })
                     .then(function(r){ return r.ok ? r.json() : null; })
                     .then(function(res){
-                        if (!res || !res.Success) { showToast((res && res.Message) || tr('friends.create_group_failed','Could not create group.'),''); return; }
+                        if (!res || !res.Success) { showToast(abMsgText(res) || tr('friends.create_group_failed','Could not create group.'),''); return; }
                         cleanup();
                         var conv = res.Conversation;
                         var meNorm = uid.toLowerCase().replace(/-/g,'');

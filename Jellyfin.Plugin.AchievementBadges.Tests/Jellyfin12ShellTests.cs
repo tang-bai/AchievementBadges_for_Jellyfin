@@ -268,6 +268,34 @@ public class Jellyfin12ShellTests
             StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void TheStandalonePageHasTheDictionaryInHandBeforeItRenders()
+    {
+        // The badge grid, quest rows and leaderboard are built from string
+        // templates with tr() calls baked in when they render, while the
+        // dictionary is a separate async load. When that load was fired and
+        // forgotten, the first render always won the race and kept its English
+        // fallbacks for ever — applyStaticTranslations() only rewrites
+        // [data-i18n] markers and never revisits generated markup. That is why
+        // an otherwise Chinese page still read "Progress", "LOCKED" and
+        // "EQUIP". The dictionary must be part of the same batch as the data.
+        var js = ReadEmbedded("standalone.js");
+
+        Assert.Contains("var langReady = Promise.all([", js, StringComparison.Ordinal);
+
+        var loadAll = js.IndexOf("function loadAll()", StringComparison.Ordinal);
+        Assert.True(loadAll > 0, "loadAll() is gone");
+
+        var batchStart = js.IndexOf("return Promise.all([", loadAll, StringComparison.Ordinal);
+        Assert.True(batchStart > loadAll, "loadAll() no longer batches its fetches");
+
+        var batchEnd = js.IndexOf("]).then(function (results) {", batchStart, StringComparison.Ordinal);
+        Assert.True(batchEnd > batchStart, "the batch no longer feeds the render");
+
+        var batch = js.Substring(batchStart, batchEnd - batchStart);
+        Assert.Contains("langReady", batch, StringComparison.Ordinal);
+    }
+
     private static int CountOf(string text, string needle)
     {
         var count = 0;

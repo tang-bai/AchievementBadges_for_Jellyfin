@@ -766,13 +766,13 @@ public class AchievementBadgeService : IDisposable
         // and contains only safe chars (letters / digits / dash / underscore).
         if (string.IsNullOrWhiteSpace(badgeId) || badgeId.Length > 128)
         {
-            return new { Success = false, Message = "Invalid badge id." };
+            return new { Success = false, Message = "Invalid badge id.", MessageKey = "err.invalid_badge_id" };
         }
         foreach (var ch in badgeId)
         {
             if (!char.IsLetterOrDigit(ch) && ch != '-' && ch != '_')
             {
-                return new { Success = false, Message = "Invalid badge id." };
+                return new { Success = false, Message = "Invalid badge id.", MessageKey = "err.invalid_badge_id" };
             }
         }
         lock (_lock)
@@ -784,11 +784,11 @@ public class AchievementBadgeService : IDisposable
                 // profile — prevents attackers from bloating the pinned list
                 // with arbitrary strings.
                 var exists = profile.Badges.Any(b => string.Equals(b.Id, badgeId, StringComparison.OrdinalIgnoreCase));
-                if (!exists) return new { Success = false, Message = "Badge not found." };
+                if (!exists) return new { Success = false, Message = "Badge not found.", MessageKey = "err.badge_not_found" };
                 // Cap total pinned entries to bound profile size.
                 if (profile.PinnedBadgeIds.Count >= 50)
                 {
-                    return new { Success = false, Message = "Pin limit reached (50)." };
+                    return new { Success = false, Message = "Pin limit reached (50).", MessageKey = "err.pin_limit" };
                 }
                 if (!profile.PinnedBadgeIds.Any(id => id.Equals(badgeId, StringComparison.OrdinalIgnoreCase)))
                 {
@@ -817,7 +817,7 @@ public class AchievementBadgeService : IDisposable
             else
             {
                 var badge = profile.Badges.FirstOrDefault(b => b.Id.Equals(badgeId, StringComparison.OrdinalIgnoreCase));
-                if (badge is null || !badge.Unlocked) return new { Success = false, Message = "Badge not unlocked." };
+                if (badge is null || !badge.Unlocked) return new { Success = false, Message = "Badge not unlocked.", MessageKey = "err.badge_not_unlocked" };
                 profile.EquippedTitleBadgeId = badge.Id;
             }
             Save();
@@ -1086,7 +1086,7 @@ public class AchievementBadgeService : IDisposable
             var currentScore = AchievementScoreHelper.GetTotalUnlockedScore(profile.Badges.Where(b => IsBadgeEnabled(b.Id)));
             if (currentScore < 12000)
             {
-                return new { Success = false, Message = "You need at least 12000 score (Legend rank) to prestige." };
+                return new { Success = false, Message = "You need at least 12000 score (Legend rank) to prestige.", MessageKey = "err.prestige_score" };
             }
 
             profile.PrestigeLevel++;
@@ -1111,7 +1111,7 @@ public class AchievementBadgeService : IDisposable
         {
             var profile = GetOrCreateProfile(userId);
             var def = GetActiveDefinitions().FirstOrDefault(d => d.Id.Equals(badgeId, StringComparison.OrdinalIgnoreCase));
-            if (def is null) return new { Success = false, Message = "Badge not found." };
+            if (def is null) return new { Success = false, Message = "Badge not found.", MessageKey = "err.badge_not_found" };
 
             var cost = GetPurchaseCost(def.Rarity);
             if (profile.ScoreBank < cost)
@@ -1122,7 +1122,7 @@ public class AchievementBadgeService : IDisposable
             var badge = profile.Badges.FirstOrDefault(b => b.Id.Equals(badgeId, StringComparison.OrdinalIgnoreCase));
             if (badge is null || badge.Unlocked)
             {
-                return new { Success = false, Message = "Already unlocked or missing." };
+                return new { Success = false, Message = "Already unlocked or missing.", MessageKey = "err.already_unlocked" };
             }
 
             profile.ScoreBank -= cost;
@@ -1137,16 +1137,16 @@ public class AchievementBadgeService : IDisposable
 
     public object GiftScore(string fromUserId, string toUserId, int amount)
     {
-        if (amount <= 0) return new { Success = false, Message = "Amount must be positive." };
+        if (amount <= 0) return new { Success = false, Message = "Amount must be positive.", MessageKey = "err.amount_positive" };
         fromUserId = NormalizeUserId(fromUserId);
         toUserId = NormalizeUserId(toUserId);
-        if (fromUserId == toUserId) return new { Success = false, Message = "Can't gift to yourself." };
+        if (fromUserId == toUserId) return new { Success = false, Message = "Can't gift to yourself.", MessageKey = "err.gift_self" };
 
         lock (_lock)
         {
             var from = GetOrCreateProfile(fromUserId);
             var to = GetOrCreateProfile(toUserId);
-            if (from.ScoreBank < amount) return new { Success = false, Message = "Insufficient score bank." };
+            if (from.ScoreBank < amount) return new { Success = false, Message = "Insufficient score bank.", MessageKey = "err.insufficient_bank" };
 
             from.ScoreBank -= amount;
             to.ScoreBank += amount;
@@ -1446,8 +1446,11 @@ public class AchievementBadgeService : IDisposable
             if (badge is null) return null;
 
             var clone = CloneBadge(badge);
-            // Localize title/description for the user's language.
-            Helpers.BadgeLocalizer.Localize(clone, profile.Preferences?.Language);
+            // Localize title/description for the user's language. Kept in a
+            // local so the secret-badge mask below can localize its placeholder
+            // with the same language.
+            var lang = profile.Preferences?.Language;
+            Helpers.BadgeLocalizer.Localize(clone, lang);
 
             // Apply spoiler mode and secret badge filtering (same as GetEnabledBadgeClones)
             var defsById = GetActiveDefinitions()
@@ -1467,13 +1470,14 @@ public class AchievementBadgeService : IDisposable
 
             if (isSecret && !clone.Unlocked)
             {
-                clone.Title = "???";
-                clone.Description = "Hidden achievement — keep watching to discover it.";
+                clone.Title = Helpers.BadgeLocalizer.UiText(lang, "badge.mystery", "???");
+                clone.Description = Helpers.BadgeLocalizer.UiText(
+                    lang, "badge.hidden_description", "Hidden achievement — keep watching to discover it.");
                 clone.Icon = "help";
             }
             else if (spoilerMode && !clone.Unlocked)
             {
-                clone.Description = "???";
+                clone.Description = Helpers.BadgeLocalizer.UiText(lang, "badge.mystery", "???");
             }
 
             return clone;
@@ -4079,13 +4083,14 @@ public class AchievementBadgeService : IDisposable
 
             if (isSecret && !clone.Unlocked)
             {
-                clone.Title = "???";
-                clone.Description = "Hidden achievement — keep watching to discover it.";
+                clone.Title = Helpers.BadgeLocalizer.UiText(lang, "badge.mystery", "???");
+                clone.Description = Helpers.BadgeLocalizer.UiText(
+                    lang, "badge.hidden_description", "Hidden achievement — keep watching to discover it.");
                 clone.Icon = "help";
             }
             else if (spoilerMode && !clone.Unlocked)
             {
-                clone.Description = "???";
+                clone.Description = Helpers.BadgeLocalizer.UiText(lang, "badge.mystery", "???");
             }
 
             result.Add(clone);

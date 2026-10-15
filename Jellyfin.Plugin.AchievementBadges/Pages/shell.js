@@ -17,6 +17,21 @@
         if (_abShellDict && Object.prototype.hasOwnProperty.call(_abShellDict, key)) return _abShellDict[key];
         return fallback != null ? fallback : key;
     }
+    // Server responses carry a stable MessageKey beside the English Message,
+    // because the server cannot know which language this browser is using.
+    // Swap it for the localised text in place so no caller has to care.
+    function localiseMessage(body) {
+        if (body && typeof body === "object" && body.MessageKey) {
+            let text = tr(body.MessageKey, body.Message);
+            if (Array.isArray(body.MessageArgs)) {
+                body.MessageArgs.forEach(function (value, index) {
+                    text = text.split("{" + index + "}").join(String(value));
+                });
+            }
+            body.Message = text;
+        }
+        return body;
+    }
     function shellBase() {
         try {
             var p = window.location.pathname || '';
@@ -180,7 +195,7 @@
         const cleanPath = normaliseApiPath(path);
 
         if (apiClient && typeof apiClient.getJSON === "function" && !options) {
-            return await apiClient.getJSON(apiClient.getUrl(cleanPath));
+            return localiseMessage(await apiClient.getJSON(apiClient.getUrl(cleanPath)));
         }
 
         if (apiClient && typeof apiClient.fetch === "function") {
@@ -194,6 +209,7 @@
                 let message = "Request failed: " + response.status;
                 try {
                     const body = await response.json();
+                    if (body && body.MessageKey) body.Message = tr(body.MessageKey, body.Message);
                     if (body && body.Message) {
                         message = body.Message;
                     }
@@ -208,7 +224,7 @@
             }
 
             const text = await response.text();
-            return text ? JSON.parse(text) : null;
+            return text ? localiseMessage(JSON.parse(text)) : null;
         }
 
         const response = await fetch("/" + cleanPath, Object.assign({ credentials: "include" }, options || {}));
@@ -218,6 +234,7 @@
 
             try {
                 const body = await response.json();
+                if (body && body.MessageKey) body.Message = tr(body.MessageKey, body.Message);
                 if (body && body.Message) {
                     message = body.Message;
                 }
@@ -231,7 +248,7 @@
             return null;
         }
 
-        return await response.json();
+        return localiseMessage(await response.json());
     }
 
     async function getCurrentUserId() {
