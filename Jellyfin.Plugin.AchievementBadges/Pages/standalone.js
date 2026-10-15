@@ -1197,7 +1197,7 @@
                     /* v1.8.47: Classic/Revamp toggle \u2014 mirrors the admin-page
                        toggle. Persists via the same `ab-style-pref` localStorage
                        key so the user's choice is shared across both surfaces. */
-                    '<button type="button" id="abSaStyleToggleBtn" class="abSaStyleToggleBtn" aria-pressed="false" title="Toggle Revamp / Classic UI" data-i18n="ui.toggle.classic">UI: Classic</button>' +
+                    '<button type="button" id="abSaStyleToggleBtn" class="abSaStyleToggleBtn" aria-pressed="false" title="Toggle Revamp / Classic UI" data-i18n-title="ui.toggle.tooltip" data-i18n="ui.toggle.classic">UI: Classic</button>' +
                     '<a class="ab-back" href="/web/index.html#/home">\u2190 <span data-i18n="achievements.back_home">Back Home</span></a>' +
                 '</div>' +
                 '<div class="ab-hero">' +
@@ -2209,7 +2209,7 @@
                 btn.disabled = true;
                 fetchJson('Plugins/AchievementBadges/users/' + userId + '/shop/purchase', 'POST', { ItemId: id })
                     .then(function (r) { loSetStatus((r && r.Message) || 'Purchased.'); loadLoadout(); })
-                    .catch(function (e) { loSetStatus((e && e.message) || 'Purchase failed', true); btn.disabled = false; });
+                    .catch(function (e) { loSetStatus((e && e.message) || tr('loadout.purchase_failed', 'Purchase failed'), true); btn.disabled = false; });
             });
         });
 
@@ -2338,7 +2338,7 @@
                         loadV2Cosmetics(true).then(function () { reapplyV2Visuals(); });
                         loadLoadout();
                     })
-                    .catch(function (e) { loSetStatus((e && e.message) || 'Equip failed', true); btn.disabled = false; });
+                    .catch(function (e) { loSetStatus((e && e.message) || tr('loadout.equip_failed', 'Equip failed'), true); btn.disabled = false; });
             });
         });
         host.querySelectorAll('button[data-lo-unequip]').forEach(function (btn) {
@@ -2351,7 +2351,7 @@
                         loadV2Cosmetics(true).then(function () { reapplyV2Visuals(); });
                         loadLoadout();
                     })
-                    .catch(function (e) { loSetStatus((e && e.message) || 'Unequip failed', true); btn.disabled = false; });
+                    .catch(function (e) { loSetStatus((e && e.message) || tr('loadout.unequip_failed', 'Unequip failed'), true); btn.disabled = false; });
             });
         });
     }
@@ -4632,7 +4632,7 @@
         setNativeNavigationSettingsStatus('', false);
 
         getCurrentUserId().then(function (id) {
-            if (!id) throw new Error('No current user');
+            if (!id) throw new Error(tr('admin.msg.no_current_user', 'No current user'));
             return fetchJson('Plugins/AchievementBadges/users/' + id + '/preferences').then(function (existing) {
                 var payload = existing || {};
                 delete payload[camelName];

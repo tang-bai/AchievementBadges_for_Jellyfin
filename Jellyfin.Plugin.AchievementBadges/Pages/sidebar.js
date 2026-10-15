@@ -3260,7 +3260,7 @@
                 // Browser notification (when permission granted)
                 try {
                     if ('Notification' in window && Notification.permission === 'granted' && document.visibilityState !== 'visible') {
-                        new Notification(t.otherUserName || 'New message', {
+                        new Notification(t.otherUserName || tr('friends.new_message', 'New message'), {
                             body: t.lastMessage || '',
                             tag: 'ab-msg-' + peerKey,
                             silent: prefs.MessageNotificationSound === false

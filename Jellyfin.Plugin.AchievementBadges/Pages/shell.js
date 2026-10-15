@@ -1220,11 +1220,11 @@
             recentUnlocksEmpty.style.display = "none";
 
             badges.forEach(function (badge) {
-                let unlockedText = "Unlocked recently";
+                let unlockedText = tr('stats.unlocked_recently', "Unlocked recently");
 
                 if (badge.UnlockedAt) {
                     const unlockedDate = new Date(badge.UnlockedAt);
-                    unlockedText = "Unlocked: " + unlockedDate.toLocaleString();
+                    unlockedText = tr('stats.unlocked_at', "Unlocked: ") + unlockedDate.toLocaleString();
                 }
 
                 recentUnlocksRow.appendChild(createSmallBadgeCard(badge, unlockedText));
@@ -1312,12 +1312,12 @@
                         '<div class="ab-badge-icon">' + iconGlyph(badge.Icon) + '</div>' +
                         '<div style="flex:1;">' +
                             '<div class="ab-badge-title">' + escapeHtml(badge.Title) + (index === 0 ? ' ★' : '') + '</div>' +
-                            '<div class="ab-badge-meta ' + rarityClass(badge.Rarity) + '">' + escapeHtml(badge.Rarity) + (index === 0 ? ' • Signature' : ' • Equipped') + '</div>' +
+                            '<div class="ab-badge-meta ' + rarityClass(badge.Rarity) + '">' + escapeHtml(badge.Rarity) + (index === 0 ? ' • ' + tr('stats.signature', 'Signature') : ' • ' + tr('stats.equipped', 'Equipped')) + '</div>' +
                         '</div>' +
                     '</div>' +
                     '<div class="ab-badge-footer">' +
-                        '<div class="ab-unlocked">' + (index === 0 ? 'Primary Equipped' : 'Equipped') + '</div>' +
-                        '<button type="button" class="ab-btn">Unequip</button>' +
+                        '<div class="ab-unlocked">' + (index === 0 ? tr('stats.primary_equipped', 'Primary Equipped') : tr('stats.equipped', 'Equipped')) + '</div>' +
+                        '<button type="button" class="ab-btn">' + tr('stats.unequip', 'Unequip') + '</button>' +
                     '</div>';
 
                 card.querySelector("button").addEventListener("click", function () {
@@ -1986,7 +1986,7 @@
             renderHomeBadge(
                 nextEl,
                 Array.isArray(nextBadges) && nextBadges.length > 0 ? nextBadges[0] : null,
-                "Everything unlocked.",
+                tr('stats.everything_unlocked', "Everything unlocked."),
                 true
             );
         } catch (_) {

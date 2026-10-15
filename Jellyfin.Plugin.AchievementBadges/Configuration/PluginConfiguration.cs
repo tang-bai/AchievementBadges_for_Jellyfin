@@ -6,6 +6,14 @@ namespace Jellyfin.Plugin.AchievementBadges.Configuration;
 
 public class PluginConfiguration : BasePluginConfiguration
 {
+    /// <summary>
+    /// Which configuration shape this document was written with. 0 means a
+    /// release older than the Simplified-Chinese default, so 2.4.3 can move
+    /// such a document onto the new default exactly once. Bump this whenever a
+    /// release needs a one-time fix-up of stored values.
+    /// </summary>
+    public int ConfigSchemaVersion { get; set; } = 0;
+
     public bool Enabled { get; set; } = true;
 
     public bool ShowOnUserHome { get; set; } = true;

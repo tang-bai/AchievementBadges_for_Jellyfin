@@ -195,18 +195,57 @@ public class Jellyfin12ShellTests
         // element and the summary can land first. And the showcase sat in
         // the hero's left column, next to three wide buttons, so a 1400px
         // card showed two columns of badges.
+        //
+        // The detach now lives in one place, setProfileSubtitle(). Every
+        // terminal branch has to do it: a branch that only set the error box
+        // used to leave the hero reading "Loading..." for ever, because the
+        // subtitle starts life as data-i18n="common.loading" and nothing
+        // overwrote it. The assertions below pin that contract, which is
+        // stronger than counting the old inline detaches: a new branch that
+        // writes the subtitle directly now fails the count.
         var html = ReadEmbedded("Pages.index.html");
 
-        var completion = html.IndexOf("tr('achievements.completion', 'Completion')", StringComparison.Ordinal);
-        var detached = html.IndexOf("profileSubtitle.removeAttribute('data-i18n');", completion, StringComparison.Ordinal);
-        Assert.True(completion >= 0 && detached > completion && detached - completion < 600);
-        Assert.Equal(3, CountOf(html, "profileSubtitle.removeAttribute('data-i18n');"));
+        var helper = html.IndexOf("function setProfileSubtitle(text) {", StringComparison.Ordinal);
+        Assert.True(helper >= 0, "setProfileSubtitle() is gone; the subtitle detach has no single owner");
+
+        var helperBody = html.Substring(helper, Math.Min(400, html.Length - helper));
+        Assert.Contains("profileSubtitle.textContent = text;", helperBody, StringComparison.Ordinal);
+        Assert.Contains("profileSubtitle.removeAttribute('data-i18n');", helperBody, StringComparison.Ordinal);
+
+        // The summary is written through the helper, so it is detached from
+        // the applier before a later translation pass can clobber it.
+        Assert.Contains(
+            "setProfileSubtitle(tr('achievements.completion', 'Completion')",
+            html,
+            StringComparison.Ordinal);
+
+        // Exactly one direct write: the helper's own.
+        Assert.Equal(1, CountOf(html, "profileSubtitle.textContent ="));
 
         var actions = html.IndexOf("<div class=\"abHeroActions\">", StringComparison.Ordinal);
         var showcase = html.IndexOf("<div id=\"abShowcaseWrap\"", StringComparison.Ordinal);
         Assert.True(actions >= 0 && showcase > actions);
         Assert.Contains(".abShowcaseWrap{\nmargin-top:1.1em;\nflex-basis:100%;", html, StringComparison.Ordinal);
         Assert.Contains("grid-template-columns:repeat(auto-fill,minmax(300px,1fr));", html, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void TheRevampBootstrapTranslatesThroughAbTNotTheAdminTr()
+    {
+        // The page is two <script> blocks with separate scopes: the revamp
+        // bootstrap defines abT() (deferring to window.abAdminTr), the admin
+        // block defines tr(). Calling tr() from the bootstrap compiles fine
+        // and only fails at runtime with "tr is not defined", which aborts
+        // restructureDom() midway — after every <details> has already been
+        // moved into a container that never gets attached. The whole admin
+        // page then dies on null lookups. Pin the two namespaces apart.
+        var html = ReadEmbedded("Pages.index.html");
+
+        Assert.Contains("function abT(key, fallback) {", html, StringComparison.Ordinal);
+        Assert.Contains("abT('filter.search_short'", html, StringComparison.Ordinal);
+        Assert.Contains("abT('filter.by_rarity'", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("tr('filter.search_short'", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("tr('filter.by_rarity'", html, StringComparison.Ordinal);
     }
 
     private static int CountOf(string text, string needle)

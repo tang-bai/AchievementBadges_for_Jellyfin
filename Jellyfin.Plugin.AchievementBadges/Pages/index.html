@@ -517,6 +517,17 @@ font-size:0.88em;
     try { pref = localStorage.getItem(STORE_KEY) || 'classic'; }
     catch (_) { pref = 'classic'; }
 
+    /* Shared translator for this block's dynamic strings. The admin i18n
+       loader lives in a later <script>, so window.abAdminTr does not exist
+       while this IIFE is parsed but does by the time anything renders;
+       resolve it late and fall back to the English literal. */
+    function abT(key, fallback) {
+        try {
+            if (typeof window.abAdminTr === 'function') return window.abAdminTr(key, fallback);
+        } catch (_) {}
+        return fallback != null ? fallback : key;
+    }
+
     function getApi() {
         return window.ApiClient || (window.parent && window.parent.ApiClient) || null;
     }
@@ -797,8 +808,8 @@ font-size:0.88em;
     function buildFilters(counts) {
         var totalAll = TIER_ORDER.reduce(function (a, t) { return a + (counts[t] || 0); }, 0);
         return '' +
-            '<div class="abFilterSearch"><input type="search" id="abFilterInput" placeholder="' + tr('filter.search_short', 'Search badges...') + '" aria-label="' + tr('filter.search_short', 'Search badges...') + '" /></div>' +
-            '<div class="abFilterChips" role="group" aria-label="' + tr('filter.by_rarity', 'Filter by rarity') + '">' +
+            '<div class="abFilterSearch"><input type="search" id="abFilterInput" placeholder="' + abT('filter.search_short', 'Search badges...') + '" aria-label="' + abT('filter.search_short', 'Search badges...') + '" /></div>' +
+            '<div class="abFilterChips" role="group" aria-label="' + abT('filter.by_rarity', 'Filter by rarity') + '">' +
                 '<button type="button" class="abFilterChip" data-tier="all" aria-pressed="true">All<span class="abFilterChipCount">' + totalAll + '</span></button>' +
                 TIER_ORDER.map(function (t) {
                     if (!counts[t]) return '';
@@ -855,10 +866,10 @@ font-size:0.88em;
     };
     var ADMIN_GROUPS = [
         null,
-        { num: '01', title: 'Plugin essentials',     sub: 'core configuration',                 cols: 'cols-3' },
-        { num: '02', title: 'Notifications & test',  sub: 'webhooks, toasts',                    cols: 'cols-2' },
-        { num: '03', title: 'Badge management',      sub: 'definitions, quests, challenges',     cols: 'cols-3' },
-        { num: '04', title: 'Maintenance',           sub: 'audit, history',                      cols: 'cols-2' }
+        { num: '01', titleKey: 'admin.group.essentials',    title: 'Plugin essentials',    subKey: 'admin.group.essentials_sub',    sub: 'core configuration',             cols: 'cols-3' },
+        { num: '02', titleKey: 'admin.group.notifications', title: 'Notifications & test', subKey: 'admin.group.notifications_sub', sub: 'webhooks, toasts',               cols: 'cols-2' },
+        { num: '03', titleKey: 'admin.group.badges',        title: 'Badge management',     subKey: 'admin.group.badges_sub',        sub: 'definitions, quests, challenges', cols: 'cols-3' },
+        { num: '04', titleKey: 'admin.group.maintenance',   title: 'Maintenance',          subKey: 'admin.group.maintenance_sub',   sub: 'audit, history',                 cols: 'cols-2' }
     ];
 
     // Live plugin and server versions for the hero. These used to be the
@@ -917,23 +928,23 @@ font-size:0.88em;
         return '' +
             /* v1.8.47: section number marker — unifies the editorial mono
                numbering already used on admin groups (01-04) and personal (05). */
-            '<span class="abPluginHeroSectionNum">00 / PLUGIN OVERVIEW</span>' +
+            '<span class="abPluginHeroSectionNum">' + escapeHtml(abT('admin.hero.section', '00 / PLUGIN OVERVIEW')) + '</span>' +
             '<div class="abPluginHeroHead">' +
                 '<div class="abPluginHeroIdent">' +
-                    '<span class="abEyebrow">Plugin admin</span>' +
+                    '<span class="abEyebrow">' + escapeHtml(abT('admin.hero.eyebrow', 'Plugin admin')) + '</span>' +
                     '<h1 class="abPluginHeroTitle">Achievement Badges</h1>' +
                     '<div class="abPluginHeroMeta">' +
-                        '<span><span class="abStatusDot"></span>' + escapeHtml(s.statusLabel || 'Active') + '</span>' +
+                        '<span><span class="abStatusDot"></span>' + escapeHtml(s.statusLabel || abT('admin.kpi.active', 'Active')) + '</span>' +
                         (s.version ? '<span>v' + escapeHtml(s.version) + '</span>' : '') +
                         (s.server ? '<span>Jellyfin ' + escapeHtml(s.server) + '</span>' : '') +
                     '</div>' +
                 '</div>' +
             '</div>' +
             '<div class="abPluginHeroKpis">' +
-                pluginKpi('Users tracked',  s.users    == null ? '—' : s.users,    'profiles') +
-                pluginKpi('Badges defined', s.badges   == null ? '—' : s.badges,   'configured') +
-                pluginKpi('Unlocks',        s.unlocks  == null ? '—' : s.unlocks,  'recent') +
-                pluginKpi('Plugin status',  s.statusLabel || 'Active', 'live') +
+                pluginKpi(abT('admin.kpi.users', 'Users tracked'),  s.users    == null ? '—' : s.users,    abT('admin.kpi.users_sub', 'profiles')) +
+                pluginKpi(abT('admin.kpi.badges', 'Badges defined'), s.badges   == null ? '—' : s.badges,   abT('admin.kpi.badges_sub', 'configured')) +
+                pluginKpi(abT('recap.unlocks', 'Unlocks'),        s.unlocks  == null ? '—' : s.unlocks,  abT('admin.kpi.unlocks_sub', 'recent')) +
+                pluginKpi(abT('admin.kpi.status', 'Plugin status'),  s.statusLabel || abT('admin.kpi.active', 'Active'), abT('admin.kpi.status_sub', 'live')) +
             '</div>';
     }
     function pluginKpi(label, value, sub) {
@@ -1035,8 +1046,8 @@ font-size:0.88em;
             groupEl.innerHTML =
                 '<header class="abAdminGroupHead">' +
                     '<span class="abAdminGroupNum">' + meta.num + '</span>' +
-                    '<h2 class="abAdminGroupTitle">' + meta.title + '</h2>' +
-                    '<span class="abAdminGroupSub">' + meta.sub + '</span>' +
+                    '<h2 class="abAdminGroupTitle">' + escapeHtml(abT(meta.titleKey, meta.title)) + '</h2>' +
+                    '<span class="abAdminGroupSub">' + escapeHtml(abT(meta.subKey, meta.sub)) + '</span>' +
                 '</header>' +
                 '<div class="abAdminGroupBody ' + meta.cols + '"></div>';
             adminWrap.appendChild(groupEl);
@@ -1621,7 +1632,7 @@ font-size:0.88em;
                                 <option value="ja">日本語</option>
                             </select>
                         </div>
-                        <div id="abStyleToggleHost" role="group" aria-label="Visual style"></div>
+                        <div id="abStyleToggleHost" role="group" aria-label="Visual style" data-i18n-aria-label="admin.visual_style"></div>
                     </div>
                 </div>
                 <script>
@@ -1868,7 +1879,7 @@ font-size:0.88em;
 
                         <label style="display:block; margin-bottom:0.75em;">
                             <span data-i18n="admin.v2test.user_id">Target user ID:</span><br>
-                            <input type="text" id="abV2UserId" placeholder="User GUID (e.g. ab1234...)" style="width:100%; max-width:420px; padding:0.5em; background:rgba(0,0,0,0.3); color:inherit; border:1px solid rgba(255,255,255,0.15); border-radius:4px;">
+                            <input type="text" id="abV2UserId" placeholder="User GUID (e.g. ab1234...)" data-i18n-placeholder="admin.v2test.user_id_placeholder" style="width:100%; max-width:420px; padding:0.5em; background:rgba(0,0,0,0.3); color:inherit; border:1px solid rgba(255,255,255,0.15); border-radius:4px;">
                             <span class="secondaryText" style="font-size:0.85em; display:block; margin-top:0.25em;" data-i18n="admin.v2test.user_id_hint">Find the user GUID via Jellyfin Admin → Users → click a user; their GUID is in the URL.</span>
                         </label>
 
@@ -2451,6 +2462,10 @@ font-size:0.88em;
             // catalog, audit log etc.) stay populated after translation.
             if (nodes[i].children && nodes[i].children.length > 0) continue;
             var key = nodes[i].getAttribute('data-i18n');
+            // common.loading is a placeholder that live renderers overwrite.
+            // Re-applying it on a later pass would clobber that content, so it
+            // is skipped here exactly as standalone.js skips it.
+            if (key === 'common.loading') continue;
             if (key && dict[key]) {
                 nodes[i].textContent = dict[key];
             }
@@ -2466,6 +2481,12 @@ font-size:0.88em;
         for (var k = 0; k < lblNodes.length; k++) {
             var lk = lblNodes[k].getAttribute('data-i18n-label');
             if (lk && dict[lk]) lblNodes[k].setAttribute('label', dict[lk]);
+        }
+        // ARIA labels (icon-only controls)
+        var arNodes = document.querySelectorAll('[data-i18n-aria-label]');
+        for (var al = 0; al < arNodes.length; al++) {
+            var ak = arNodes[al].getAttribute('data-i18n-aria-label');
+            if (ak && dict[ak]) arNodes[al].setAttribute('aria-label', dict[ak]);
         }
         // Titles (tooltips)
         var tNodes = document.querySelectorAll('[data-i18n-title]');
@@ -2753,7 +2774,7 @@ font-size:0.88em;
                     // of the profile that follows it, and the two are
                     // chained under one catch below.
                     var where = ' (' + httpMethod + ' ' + path.replace(/^Plugins\/AchievementBadges\//, '') + ')';
-                    var msg = 'Request failed: ' + response.status + where;
+                    var msg = tr('admin.msg.request_failed', 'Request failed: ') + response.status + where;
                     try {
                         var body = JSON.parse(text);
                         if (body && body.Message) msg = body.Message + where;
@@ -2878,8 +2899,18 @@ font-size:0.88em;
     }
 
     function setError(message) {
-        errorBox.textContent = message || 'Unknown error.';
+        errorBox.textContent = message || tr('common.unknown_error', 'Unknown error.');
         errorBox.style.display = 'block';
+    }
+
+    /* Writes the hero subtitle and detaches it from the translation applier.
+       Every terminal branch has to go through here: the subtitle starts life
+       as data-i18n="common.loading", so a branch that only sets the error box
+       leaves the hero reading "Loading..." for ever. */
+    function setProfileSubtitle(text) {
+        if (!profileSubtitle) return;
+        profileSubtitle.textContent = text;
+        profileSubtitle.removeAttribute('data-i18n');
     }
 
     function setSummary(summary) {
@@ -2937,11 +2968,7 @@ font-size:0.88em;
     function loadSummary(userId) {
         return fetchJson('Plugins/AchievementBadges/users/' + userId + '/summary').then(function (summary) {
             setSummary(summary);
-            profileSubtitle.textContent = tr('achievements.completion', 'Completion') + ': ' + ((summary && summary.Percentage != null) ? summary.Percentage : 0) + '%';
-            // The translation applier rewrites every [data-i18n] element when
-            // the dictionary lands or the language changes; if that happens
-            // after this write, the subtitle goes back to "Loading...".
-            profileSubtitle.removeAttribute('data-i18n');
+            setProfileSubtitle(tr('achievements.completion', 'Completion') + ': ' + ((summary && summary.Percentage != null) ? summary.Percentage : 0) + '%');
         });
     }
 
@@ -3144,8 +3171,7 @@ font-size:0.88em;
         // correct message and could never fire. Keep the isolation, report
         // the failure.
         var summaryPromise = loadSummary(userId).catch(function (err) {
-            profileSubtitle.textContent = tr('admin.msg.profile_failed', 'Could not load profile.');
-            profileSubtitle.removeAttribute('data-i18n');
+            setProfileSubtitle(tr('admin.msg.profile_failed', 'Could not load profile.'));
             setSummary({ Unlocked: 0, Total: 0, Percentage: 0, EquippedCount: 0 });
             console.warn('[AchievementBadges] summary load failed', err);
         });
@@ -3165,6 +3191,7 @@ font-size:0.88em;
         var userId = getUserId();
         if (!userId) {
             setStatus('');
+            setProfileSubtitle(tr('admin.msg.no_user_selected', 'No user selected'));
             setError(tr('admin.msg.no_user_id', 'No user ID was found for this page.'));
             return;
         }
@@ -3182,8 +3209,7 @@ font-size:0.88em;
             emptyState.style.display = 'block';
             leaderboardBox.innerHTML = tr('admin.msg.lb_failed', 'Failed to load leaderboard.');
             serverStatsBox.innerHTML = tr('admin.msg.server_stats_failed', 'Failed to load server stats.');
-            profileSubtitle.textContent = tr('admin.msg.profile_failed', 'Could not load profile.');
-            profileSubtitle.removeAttribute('data-i18n');
+            setProfileSubtitle(tr('admin.msg.profile_failed', 'Could not load profile.'));
             setSummary({ Unlocked: 0, Total: 0, Percentage: 0, EquippedCount: 0 });
             setStatus('');
             setError(tr('admin.msg.badges_load_failed', 'Failed to load badges.') + ' ' + (error && error.message ? error.message : String(error)));
@@ -3301,22 +3327,24 @@ font-size:0.88em;
                 loadBadges();
             } else {
                 setStatus('');
+                setProfileSubtitle(tr('admin.msg.no_user_selected', 'No user selected'));
                 setError(tr('admin.msg.auto_detect_failed', 'Could not detect a user automatically. Use "Use my account" or enter a user ID manually.'));
             }
         }).catch(function (error) {
             setStatus('');
+            setProfileSubtitle(tr('admin.msg.profile_failed', 'Could not load profile.'));
             setError(tr('admin.msg.init_failed', 'Failed to initialise page.') + ' ' + (error && error.message ? error.message : String(error)));
         });
     }
 
-    tabBadgesBtn.addEventListener('click', function () { setActiveTab('badges'); });
-    tabLeaderboardBtn.addEventListener('click', function () {
+    if (tabBadgesBtn) tabBadgesBtn.addEventListener('click', function () { setActiveTab('badges'); });
+    if (tabLeaderboardBtn) tabLeaderboardBtn.addEventListener('click', function () {
         setActiveTab('leaderboard');
         // Refresh on open so a just-deleted account drops off immediately
         // rather than lingering until the next full reload.
         loadLeaderboard().catch(function (err) { console.warn('[AchievementBadges] leaderboard refresh failed', err); });
     });
-    tabStatsBtn.addEventListener('click', function () {
+    if (tabStatsBtn) tabStatsBtn.addEventListener('click', function () {
         setActiveTab('stats');
         loadServerStats().catch(function (err) { console.warn('[AchievementBadges] server stats refresh failed', err); });
     });
@@ -3330,13 +3358,17 @@ font-size:0.88em;
         });
     }
     if (refreshUsersBtn) refreshUsersBtn.addEventListener('click', loadServerUsers);
-    meBtn.addEventListener('click', useMyAccount);
-    loadBtn.addEventListener('click', loadBadges);
-    refreshBtn.addEventListener('click', loadBadges);
-    simulateBtn.addEventListener('click', simulatePlayback);
-    resetBtn.addEventListener('click', resetBadges);
+    // Guarded: these controls live inside <details> that the admin-drawer
+    // restructure moves between containers. One missing element used to abort
+    // the whole wiring pass, which turned a broken restructure into a dead
+    // page; now it degrades to "that one button does nothing".
+    if (meBtn) meBtn.addEventListener('click', useMyAccount);
+    if (loadBtn) loadBtn.addEventListener('click', loadBadges);
+    if (refreshBtn) refreshBtn.addEventListener('click', loadBadges);
+    if (simulateBtn) simulateBtn.addEventListener('click', simulatePlayback);
+    if (resetBtn) resetBtn.addEventListener('click', resetBadges);
 
-    backfillBtn.addEventListener('click', function () {
+    if (backfillBtn) backfillBtn.addEventListener('click', function () {
         var userId = getUserId();
         if (!userId) { setError(tr('admin.msg.no_user_id_short', 'No user ID.')); return; }
         clearError();
@@ -3393,7 +3425,7 @@ font-size:0.88em;
         });
     });
 
-    backfillAllBtn.addEventListener('click', function () {
+    if (backfillAllBtn) backfillAllBtn.addEventListener('click', function () {
         clearError();
         setStatus(tr('admin.msg.scanning_all', 'Scanning watch history for ALL users... this may take a while...'));
         fetchJson('Plugins/AchievementBadges/backfill-all', 'POST').then(function (result) {
@@ -3568,17 +3600,17 @@ font-size:0.88em;
         });
     }
 
-    catalogReloadBtn.addEventListener('click', loadCatalog);
+    if (catalogReloadBtn) catalogReloadBtn.addEventListener('click', loadCatalog);
     // Exposed to the admin-page translator so it can re-invoke the catalog
     // fetch AFTER it resolves the user's language from the server. The
     // initial page-load call fires before localStorage is populated, so
     // without this second call the grid stays English for a French /
     // Portuguese / etc. admin.
     window.abReloadAdminBadges = loadCatalog;
-    catalogEnableAllBtn.addEventListener('click', function () {
+    if (catalogEnableAllBtn) catalogEnableAllBtn.addEventListener('click', function () {
         bulkSet([]);
     });
-    catalogDisableAllBtn.addEventListener('click', function () {
+    if (catalogDisableAllBtn) catalogDisableAllBtn.addEventListener('click', function () {
         fetchJson('Plugins/AchievementBadges/admin/badge-catalog').then(function (res) {
             var all = [];
             (res.Catalog || []).forEach(function (g) {
@@ -3607,7 +3639,7 @@ font-size:0.88em;
             if (webhookHeadersEl) webhookHeadersEl.value = c.WebhookHeaders || '';
         });
     }
-    webhookSaveBtn.addEventListener('click', function () {
+    if (webhookSaveBtn) webhookSaveBtn.addEventListener('click', function () {
         fetchJson('Plugins/AchievementBadges/admin/webhook', 'POST', {
             WebhookEnabled: webhookEnabledEl.checked,
             WebhookUrl: webhookUrlEl.value,
@@ -3742,7 +3774,7 @@ font-size:0.88em;
         function needUser(stat) {
             if (uid()) return true;
             stat.style.color = '#f87171';
-            stat.textContent = 'Target user ID required.';
+            stat.textContent = tr('admin.msg.target_user_required', 'Target user ID required.');
             return false;
         }
         function ok(stat, msg) { stat.style.color = ''; stat.textContent = msg; }
@@ -3776,7 +3808,7 @@ font-size:0.88em;
             var n = Math.max(1, parseInt(puCount.value, 10) || 1);
             puBtn.disabled = true;
             fetchJson('Plugins/AchievementBadges/admin/users/' + encodeURIComponent(uid()) + '/grant-powerup/' + encodeURIComponent(t), 'POST', { Count: n })
-                .then(function () { ok(puStat, 'Granted ' + n + 'x ' + t + '.'); })
+                .then(function () { ok(puStat, tr('admin.msg.granted_prefix', 'Granted ') + n + 'x ' + t + '.'); })
                 .catch(function (e) { err(puStat, e); })
                 .finally(function () { puBtn.disabled = false; });
         });
@@ -3784,10 +3816,10 @@ font-size:0.88em;
         cosBtn.addEventListener('click', function () {
             if (!needUser(cosStat)) return;
             var id = cosSel.value;
-            if (!id) { err(cosStat, { message: 'Pick a cosmetic.' }); return; }
+            if (!id) { err(cosStat, { message: tr('admin.msg.pick_cosmetic', 'Pick a cosmetic.') }); return; }
             cosBtn.disabled = true;
             fetchJson('Plugins/AchievementBadges/admin/users/' + encodeURIComponent(uid()) + '/grant-cosmetic', 'POST', { CosmeticId: id })
-                .then(function (r) { ok(cosStat, r.AlreadyOwned ? 'Already owned.' : 'Granted. Owned count = ' + (r.Owned || []).length + '.'); })
+                .then(function (r) { ok(cosStat, r.AlreadyOwned ? tr('admin.msg.already_owned', 'Already owned.') : tr('admin.msg.granted_owned_prefix', 'Granted. Owned count = ') + (r.Owned || []).length + '.'); })
                 .catch(function (e) { err(cosStat, e); })
                 .finally(function () { cosBtn.disabled = false; });
         });
@@ -3797,7 +3829,7 @@ font-size:0.88em;
             bfStat.style.color = '';
             bfStat.textContent = 'Scanning…';
             fetchJson('Plugins/AchievementBadges/admin/backfill-milestones', 'POST', {})
-                .then(function (r) { ok(bfStat, 'Done. Scanned ' + r.Scanned + ' profiles; ' + r.Changed + ' got new milestones.'); })
+                .then(function (r) { ok(bfStat, tr('admin.msg.backfill_done_prefix', 'Done. Scanned ') + r.Scanned + tr('admin.msg.backfill_done_mid', ' profiles; ') + r.Changed + tr('admin.msg.backfill_done_suffix', ' got new milestones.')); })
                 .catch(function (e) { err(bfStat, e); })
                 .finally(function () { bfBtn.disabled = false; });
         });
@@ -3815,7 +3847,7 @@ font-size:0.88em;
         uiHomeEl.checked = c.EnableHomeWidget !== false;
         uiRibbonEl.checked = c.EnableItemDetailRibbon !== false;
     });
-    uiSaveBtn.addEventListener('click', function () {
+    if (uiSaveBtn) uiSaveBtn.addEventListener('click', function () {
         fetchJson('Plugins/AchievementBadges/admin/ui-features', 'POST', {
             EnableUnlockToasts: uiToastsEl.checked,
             EnableHomeWidget: uiHomeEl.checked,
@@ -4043,8 +4075,8 @@ font-size:0.88em;
             if (customBadgesListEl) customBadgesListEl.innerHTML = '<span class="secondaryText">' + tr('admin.msg.load_failed', 'Failed to load:') + ' ' + escapeHtml(e.message || String(e)) + '</span>';
         });
     }
-    customBadgesLoadBtn.addEventListener('click', loadCustomBadges);
-    customBadgesSaveBtn.addEventListener('click', function () {
+    if (customBadgesLoadBtn) customBadgesLoadBtn.addEventListener('click', loadCustomBadges);
+    if (customBadgesSaveBtn) customBadgesSaveBtn.addEventListener('click', function () {
         var parsed;
         try {
             parsed = JSON.parse(customBadgesJsonEl.value || '{}');
@@ -4078,8 +4110,8 @@ font-size:0.88em;
             challengesJsonEl.value = JSON.stringify(r || [], null, 2);
         });
     }
-    challengesLoadBtn.addEventListener('click', loadChallenges);
-    challengesSaveBtn.addEventListener('click', function () {
+    if (challengesLoadBtn) challengesLoadBtn.addEventListener('click', loadChallenges);
+    if (challengesSaveBtn) challengesSaveBtn.addEventListener('click', function () {
         try {
             var parsed = JSON.parse(challengesJsonEl.value || '[]');
             fetchJson('Plugins/AchievementBadges/admin/challenges', 'POST', parsed)
@@ -4316,9 +4348,9 @@ font-size:0.88em;
         vbParamRow.style.display = needs ? '' : 'none';
         if (!needs && vbParamEl) { vbParamEl.value = ''; }
     }
-    vbMetricEl.addEventListener('change', abVbToggleParam);
+    if (vbMetricEl) vbMetricEl.addEventListener('change', abVbToggleParam);
     abVbToggleParam();
-    vbAddBtn.addEventListener('click', function () {
+    if (vbAddBtn) vbAddBtn.addEventListener('click', function () {
         var opt = vbMetricEl.options[vbMetricEl.selectedIndex];
         var needsParam = !!(opt && opt.getAttribute('data-param'));
         var metricParam = ((vbParamEl && vbParamEl.value) || '').trim();
@@ -4354,7 +4386,7 @@ font-size:0.88em;
     // --- Challenge templates ---
     var challengeTplLoadBtn = document.getElementById('abChallengeTplLoadBtn');
     var challengeTplList = document.getElementById('abChallengeTplList');
-    challengeTplLoadBtn.addEventListener('click', function () {
+    if (challengeTplLoadBtn) challengeTplLoadBtn.addEventListener('click', function () {
         fetchJson('Plugins/AchievementBadges/admin/challenge-templates').then(function (tpls) {
             challengeTplList.innerHTML = '';
             (tpls || []).forEach(function (tpl) {
@@ -4392,7 +4424,7 @@ font-size:0.88em;
             }).join('');
         });
     }
-    auditReloadBtn.addEventListener('click', loadAudit);
+    if (auditReloadBtn) auditReloadBtn.addEventListener('click', loadAudit);
     loadAudit();
 
     // --- Daily badge audit & cleanup (v2.1.0, M6 time-windowed) ---
@@ -4465,7 +4497,7 @@ font-size:0.88em;
     // --- Inject counters ---
     var injectBtn = document.getElementById('abInjectBtn');
     var injectStatus = document.getElementById('abInjectStatus');
-    injectBtn.addEventListener('click', function () {
+    if (injectBtn) injectBtn.addEventListener('click', function () {
         var uid = getUserId();
         if (!uid) { injectStatus.textContent = tr('admin.msg.load_user_first', 'Load a user first.'); return; }
         var key = document.getElementById('abInjectKey').value.trim();
@@ -4557,7 +4589,7 @@ font-size:0.88em;
         }
     })();
 
-    fcSaveBtn.addEventListener('click', function () {
+    if (fcSaveBtn) fcSaveBtn.addEventListener('click', function () {
         var catText = document.getElementById('abFcDisabledBadgeCategories').value || '';
         var categories = catText.split(',').map(function (s) { return s.trim(); }).filter(function (s) { return s.length > 0; });
         var maxBadges = parseInt(document.getElementById('abFcMaxEquippedBadges').value, 10) || 5;

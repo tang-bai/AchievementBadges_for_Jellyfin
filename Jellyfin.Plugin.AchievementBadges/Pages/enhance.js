@@ -679,8 +679,8 @@
         for (var i = 0; i < total; i++) {
             testBadges.push({
                 Id: 'test-batch-' + Date.now() + '-' + i,
-                Title: 'Test Unlock ' + (i + 1),
-                Description: 'Synthetic notification ' + (i + 1) + ' of ' + total + '. No achievement data was changed.',
+                Title: tr('toast.test.unlock_title_prefix', 'Test Unlock ') + (i + 1),
+                Description: tr('toast.test.synthetic_prefix', 'Synthetic notification ') + (i + 1) + tr('toast.test.synthetic_mid', ' of ') + total + tr('toast.test.synthetic_suffix', '. No achievement data was changed.'),
                 Rarity: rarities[i % rarities.length],
                 Icon: 'emoji_events',
                 UnlockedAt: new Date().toISOString(),

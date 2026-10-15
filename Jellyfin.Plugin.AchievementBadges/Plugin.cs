@@ -42,6 +42,40 @@ public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
         : base(applicationPaths, xmlSerializer)
     {
         Instance = this;
+        ApplyConfigurationMigrations();
+    }
+
+    /// <summary>
+    /// Brings a configuration document written by an older release up to the
+    /// current shape. Every release before 2.4.3 shipped English as the
+    /// server-wide default, so an upgrade from one of those left the plugin
+    /// English even though the shipped default is now Simplified Chinese:
+    /// the stored value outranks the property initialiser. A document that
+    /// predates the marker therefore has its DefaultLanguage re-seeded once.
+    /// An admin who wants English back changes it on the config page, and
+    /// that choice is then honoured because the marker stops the re-seed.
+    /// Wrapped so a read-only or unwritable configuration directory can never
+    /// stop the plugin from loading.
+    /// </summary>
+    private void ApplyConfigurationMigrations()
+    {
+        try
+        {
+            var configuration = Configuration;
+            if (configuration is null || configuration.ConfigSchemaVersion >= 1)
+            {
+                return;
+            }
+
+            configuration.DefaultLanguage = DefaultLanguageCode;
+            configuration.ConfigSchemaVersion = 1;
+            SaveConfiguration();
+        }
+        catch
+        {
+            // Best effort only: an older document keeps its stored language
+            // and the admin can still change it on the config page.
+        }
     }
 
     public IEnumerable<PluginPageInfo> GetPages()
