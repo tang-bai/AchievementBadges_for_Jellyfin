@@ -5,6 +5,90 @@
     const HOME_WIDGET_ID = "achievementBadgesHomeWidget";
     const SIDEBAR_ID = "achievementsSidebarEntry";
 
+    // ===== i18n =====
+    // Language used until a preference or public-config resolves. Simplified
+    // Chinese, matching Plugin.DefaultLanguageCode.
+    var AB_DEFAULT_LANG = 'zh';
+    var _abShellDict = null;
+    // Defer to a dictionary another script already installed (index.html's
+    // window.abAdminTr, standalone.js's tr) and fall back to fetching the
+    // bundle ourselves. Returns the key's text, or the English fallback.
+    function tr(key, fallback) {
+        if (_abShellDict && Object.prototype.hasOwnProperty.call(_abShellDict, key)) return _abShellDict[key];
+        return fallback != null ? fallback : key;
+    }
+    function shellBase() {
+        try {
+            var p = window.location.pathname || '';
+            var i = p.lastIndexOf('/web/');
+            if (i >= 0) return p.substring(0, i + 1);
+            var s = p.lastIndexOf('/');
+            if (s > 0) return p.substring(0, s + 1);
+        } catch (e) {}
+        return '/';
+    }
+    function shellPickLang() {
+        try {
+            var manual = (window.localStorage && localStorage.getItem('achievementBadgesLangManual')) || '';
+            if (manual) return manual;
+            var stored = (window.localStorage && localStorage.getItem('achievementBadgesLang')) || '';
+            if (stored) return stored;
+        } catch (e) {}
+        var nav = (navigator.language || navigator.userLanguage || AB_DEFAULT_LANG).toLowerCase().slice(0, 2);
+        var supported = ['en', 'fr', 'es', 'de', 'it', 'pt', 'zh', 'ja'];
+        return supported.indexOf(nav) >= 0 ? nav : AB_DEFAULT_LANG;
+    }
+    function shellLoadDict(lang) {
+        var clean = String(lang || AB_DEFAULT_LANG).toLowerCase().replace(/[^a-z-]/g, '') || AB_DEFAULT_LANG;
+        var url;
+        try {
+            var api = window.ApiClient || window.apiClient || null;
+            url = (api && typeof api.getUrl === 'function')
+                ? api.getUrl('Plugins/AchievementBadges/translations/' + clean)
+                : shellBase() + 'Plugins/AchievementBadges/translations/' + clean;
+        } catch (e) { url = shellBase() + 'Plugins/AchievementBadges/translations/' + clean; }
+        return fetch(url, { credentials: 'same-origin' })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) { if (d) _abShellDict = d; return d; })
+            .catch(function () { return null; });
+    }
+    try { shellLoadDict(shellPickLang()); } catch (e) {}
+    // Re-resolve once the server default is reachable.
+    try {
+        Promise.all([
+            fetch((function () {
+                try {
+                    var api = window.ApiClient || window.apiClient || null;
+                    return (api && typeof api.getUrl === 'function')
+                        ? api.getUrl('Plugins/AchievementBadges/public-config')
+                        : shellBase() + 'Plugins/AchievementBadges/public-config';
+                } catch (e) { return shellBase() + 'Plugins/AchievementBadges/public-config'; }
+            })(), { credentials: 'same-origin' })
+                .then(function (r) { return r.ok ? r.json() : null; })
+                .catch(function () { return null; }),
+            fetch((function () {
+                try {
+                    var api = window.ApiClient || window.apiClient || null;
+                    var uid = '';
+                    try { if (api && api.getCurrentUserId) uid = api.getCurrentUserId() || ''; } catch (e2) {}
+                    if (!uid) return null;
+                    return (api && typeof api.getUrl === 'function')
+                        ? api.getUrl('Plugins/AchievementBadges/users/' + uid + '/preferences')
+                        : shellBase() + 'Plugins/AchievementBadges/users/' + uid + '/preferences';
+                } catch (e) { return null; }
+            })(), { credentials: 'same-origin' })
+                .then(function (r) { return r && r.ok ? r.json() : null; })
+                .catch(function () { return null; })
+        ]).then(function (parts) {
+            var cfg = parts[0] || {};
+            var prefs = parts[1] || {};
+            var userLang = (prefs.Language || prefs.language || 'default').toString().toLowerCase();
+            var adminLang = (cfg.DefaultLanguage || cfg.defaultLanguage || AB_DEFAULT_LANG).toString().toLowerCase();
+            var eff = (userLang === 'default' || !userLang) ? adminLang : userLang;
+            if (eff) shellLoadDict(eff);
+        }).catch(function () {});
+    } catch (e) {}
+
     function escapeHtml(s) {
         var d = document.createElement('div');
         d.textContent = s == null ? '' : String(s);
@@ -1024,7 +1108,7 @@
         }
 
         function setError(message) {
-            errorBox.textContent = message || "Unknown error.";
+            errorBox.textContent = message || tr('common.unknown_error', 'Unknown error.');
             errorBox.style.display = "block";
         }
 
@@ -1312,12 +1396,12 @@
 
             if (viewBadges.length === 0) {
                 emptyState.style.display = "block";
-                emptyState.textContent = "No badges matched your current search or filters.";
+                emptyState.textContent = tr('admin.msg.no_badges_match', 'No badges matched your current search or filters.');
                 return;
             }
 
             emptyState.style.display = "none";
-            emptyState.textContent = "Start watching to unlock your first achievement.";
+            emptyState.textContent = tr('admin.msg.start_watching', 'Start watching to unlock your first achievement.');
 
             viewBadges.forEach(function (badge) {
                 const current = badge.CurrentValue || 0;
@@ -1492,7 +1576,7 @@
 
         async function reloadAll() {
             if (!currentUserId) {
-                throw new Error("No user ID was found for this page.");
+                throw new Error(tr('admin.msg.no_user_id', 'No user ID was found for this page.'));
             }
 
             profileTitle.textContent = "Achievement Profile • " + currentUserId;
@@ -1512,17 +1596,17 @@
         async function loadBadges() {
             if (!currentUserId) {
                 setStatus("");
-                setError("No user ID was found for this page.");
+                setError(tr('admin.msg.no_user_id', 'No user ID was found for this page.'));
                 return;
             }
 
             clearError();
-            setStatus("Loading badges...");
+            setStatus(tr('admin.msg.loading_badges', 'Loading badges...'));
             startUnlockPolling();
 
             try {
                 await reloadAll();
-                setStatus("Badges loaded.");
+                setStatus(tr('admin.msg.badges_loaded', 'Badges loaded.'));
             } catch (error) {
                 grid.innerHTML = "";
                 equippedRow.innerHTML = "";
@@ -1539,9 +1623,9 @@
                 emptyState.style.display = "block";
                 recentUnlocksEmpty.style.display = "block";
                 nextBadgesEmpty.style.display = "block";
-                leaderboardBox.innerHTML = "Failed to load leaderboard.";
-                serverStatsBox.innerHTML = "Failed to load server stats.";
-                profileSubtitle.textContent = "Could not load profile showcase.";
+                leaderboardBox.innerHTML = tr('admin.msg.lb_failed', 'Failed to load leaderboard.');
+                serverStatsBox.innerHTML = tr('admin.msg.server_stats_failed', 'Failed to load server stats.');
+                profileSubtitle.textContent = tr('admin.msg.profile_failed', 'Could not load profile showcase.');
                 setSummary({
                     Unlocked: 0,
                     Total: 0,
@@ -1552,73 +1636,73 @@
                     BestWatchStreak: 0
                 });
                 setStatus("");
-                setError("Failed to load badges. " + (error && error.message ? error.message : "Unknown error."));
+                setError(tr('admin.msg.badges_load_failed', 'Failed to load badges.') + ' ' + (error && error.message ? error.message : tr('common.unknown_error', 'Unknown error.')));
             }
         }
 
         async function simulatePlayback() {
             if (!currentUserId) {
                 setStatus("");
-                setError("No user ID was found for this page.");
+                setError(tr('admin.msg.no_user_id', 'No user ID was found for this page.'));
                 return;
             }
 
             clearError();
-            setStatus("Simulating playback...");
+            setStatus(tr('admin.msg.simulating', 'Simulating playback...'));
 
             try {
                 await fetchJson("Plugins/AchievementBadges/users/" + currentUserId + "/simulate-playback", {
                     method: "POST"
                 });
                 await reloadAll();
-                setStatus("Playback simulated successfully.");
+                setStatus(tr('admin.msg.simulate_ok', 'Playback simulated successfully.'));
             } catch (error) {
                 setStatus("");
-                setError("Failed to simulate playback. " + (error && error.message ? error.message : "Unknown error."));
+                setError(tr('admin.msg.simulate_failed', 'Failed to simulate playback.') + ' ' + (error && error.message ? error.message : tr('common.unknown_error', 'Unknown error.')));
             }
         }
 
         async function equipBadge(badgeId) {
             clearError();
-            setStatus("Equipping badge...");
+            setStatus(tr('admin.msg.equipping', 'Equipping badge...'));
 
             try {
                 await fetchJson("Plugins/AchievementBadges/users/" + currentUserId + "/equipped/" + badgeId, {
                     method: "POST"
                 });
                 await reloadAll();
-                setStatus("Badge equipped.");
+                setStatus(tr('admin.msg.equipped_ok', 'Badge equipped.'));
             } catch (error) {
                 setStatus("");
-                setError("Failed to equip badge. " + (error && error.message ? error.message : "Unknown error."));
+                setError(tr('admin.msg.equip_failed', 'Failed to equip badge.') + ' ' + (error && error.message ? error.message : tr('common.unknown_error', 'Unknown error.')));
             }
         }
 
         async function unequipBadge(badgeId) {
             clearError();
-            setStatus("Unequipping badge...");
+            setStatus(tr('admin.msg.unequipping', 'Unequipping badge...'));
 
             try {
                 await fetchJson("Plugins/AchievementBadges/users/" + currentUserId + "/equipped/" + badgeId, {
                     method: "DELETE"
                 });
                 await reloadAll();
-                setStatus("Badge unequipped.");
+                setStatus(tr('admin.msg.unequipped_ok', 'Badge unequipped.'));
             } catch (error) {
                 setStatus("");
-                setError("Failed to unequip badge. " + (error && error.message ? error.message : "Unknown error."));
+                setError(tr('admin.msg.unequip_failed', 'Failed to unequip badge.') + ' ' + (error && error.message ? error.message : tr('common.unknown_error', 'Unknown error.')));
             }
         }
 
         async function useMyAccount() {
             clearError();
-            setStatus("Detecting current user...");
+            setStatus(tr('admin.msg.detecting_user', 'Detecting current user...'));
 
             try {
                 const detected = await getCurrentUserId();
 
                 if (!detected) {
-                    throw new Error("Could not determine current user.");
+                    throw new Error(tr('admin.msg.cannot_determine_user', 'Could not determine current user.'));
                 }
 
                 currentUserId = detected;
@@ -1626,7 +1710,7 @@
                 await loadBadges();
             } catch (error) {
                 setStatus("");
-                setError("Failed to detect current user. " + (error && error.message ? error.message : "Unknown error."));
+                setError(tr('admin.msg.detect_failed', 'Failed to detect current user.') + ' ' + (error && error.message ? error.message : tr('common.unknown_error', 'Unknown error.')));
             }
         }
 
@@ -1895,7 +1979,7 @@
             renderHomeBadge(
                 recentEl,
                 Array.isArray(recentUnlocks) && recentUnlocks.length > 0 ? recentUnlocks[0] : null,
-                "No unlocks yet.",
+                tr('stats.no_unlocks_yet', 'No unlocks yet.'),
                 false
             );
 

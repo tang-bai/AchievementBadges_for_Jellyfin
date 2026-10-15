@@ -797,8 +797,8 @@ font-size:0.88em;
     function buildFilters(counts) {
         var totalAll = TIER_ORDER.reduce(function (a, t) { return a + (counts[t] || 0); }, 0);
         return '' +
-            '<div class="abFilterSearch"><input type="search" id="abFilterInput" placeholder="Search badges..." aria-label="Search badges" /></div>' +
-            '<div class="abFilterChips" role="group" aria-label="Filter by rarity">' +
+            '<div class="abFilterSearch"><input type="search" id="abFilterInput" placeholder="' + tr('filter.search_short', 'Search badges...') + '" aria-label="' + tr('filter.search_short', 'Search badges...') + '" /></div>' +
+            '<div class="abFilterChips" role="group" aria-label="' + tr('filter.by_rarity', 'Filter by rarity') + '">' +
                 '<button type="button" class="abFilterChip" data-tier="all" aria-pressed="true">All<span class="abFilterChipCount">' + totalAll + '</span></button>' +
                 TIER_ORDER.map(function (t) {
                     if (!counts[t]) return '';
@@ -1611,6 +1611,7 @@ font-size:0.88em;
                                 #abLangSelect option { background:#05070a; color:#f8fafc; }
                             </style>
                             <select id="abLangSelect" aria-label="Language">
+                                <option value="zh">简体中文</option>
                                 <option value="en">English</option>
                                 <option value="fr">Français</option>
                                 <option value="es">Español</option>
@@ -1618,7 +1619,6 @@ font-size:0.88em;
                                 <option value="it">Italiano</option>
                                 <option value="pt">Português</option>
                                 <option value="ja">日本語</option>
-                                <option value="zh">中文</option>
                             </select>
                         </div>
                         <div id="abStyleToggleHost" role="group" aria-label="Visual style"></div>
@@ -1631,8 +1631,8 @@ font-size:0.88em;
                     function cur() {
                         try {
                             if (typeof window.abCurrentLanguage === 'function') return window.abCurrentLanguage();
-                            return (window.localStorage && localStorage.getItem('achievementBadgesLang')) || 'en';
-                        } catch (e) { return 'en'; }
+                            return (window.localStorage && localStorage.getItem('achievementBadgesLang')) || 'zh';
+                        } catch (e) { return 'zh'; }
                     }
                     // Reflect the active language once the i18n layer has resolved it.
                     function sync() { try { var c = cur(); if (c) sel.value = c; } catch (e) {} }
@@ -2093,13 +2093,13 @@ font-size:0.88em;
                         </label>
                         <label style="display:block; margin-bottom:0.75em;"><span data-i18n="admin.fc.default_language">Default language (used when a user hasn't chosen one):</span><br>
                             <select id="abFcDefaultLanguage" style="padding:0.5em; background:rgba(0,0,0,0.3); color:inherit; border:1px solid rgba(255,255,255,0.15); border-radius:4px;">
+                                <option value="zh">简体中文</option>
                                 <option value="en">English</option>
                                 <option value="fr">Français</option>
                                 <option value="es">Español</option>
                                 <option value="de">Deutsch</option>
                                 <option value="it">Italiano</option>
                                 <option value="pt">Português</option>
-                                <option value="zh">中文</option>
                                 <option value="ja">日本語</option>
                             </select>
                             <div class="secondaryText" style="font-size:0.85em; margin-top:0.25em;" data-i18n="admin.fc.lang_note">Badge titles/descriptions are not yet localized; only UI chrome is translated.</div>
@@ -2434,9 +2434,11 @@ font-size:0.88em;
             var stored = (window.localStorage && localStorage.getItem('achievementBadgesLang')) || '';
             if (stored) return stored;
         } catch (e) { /* ignore */ }
-        var nav = (navigator.language || navigator.userLanguage || 'en').toLowerCase().slice(0, 2);
+        var nav = (navigator.language || navigator.userLanguage || 'zh').toLowerCase().slice(0, 2);
         var supported = ['en','fr','es','de','it','pt','zh','ja'];
-        return supported.indexOf(nav) >= 0 ? nav : 'en';
+        // Simplified Chinese when the browser asks for something we don't ship,
+        // matching Plugin.DefaultLanguageCode and the server-side default.
+        return supported.indexOf(nav) >= 0 ? nav : 'zh';
     }
     function apply(dict) {
         if (!dict) return;
@@ -2557,7 +2559,8 @@ font-size:0.88em;
         try { loadForLang(pickLang()).catch(function () {}); } catch (e) {}
 
         waitForApiClient(5000).then(function (apiClient) {
-            var adminLang = 'en';
+            // Falls back to Simplified Chinese until public-config answers.
+            var adminLang = 'zh';
             var userId = '';
             try {
                 if (apiClient && typeof apiClient.getCurrentUserId === 'function') {
@@ -4499,7 +4502,7 @@ font-size:0.88em;
             document.getElementById('abFcDisabledBadgeCategories').value = (c.DisabledBadgeCategories || []).join(', ');
             document.getElementById('abFcWelcomeMessage').value = c.WelcomeMessage || '';
             var dlSel = document.getElementById('abFcDefaultLanguage');
-            if (dlSel) dlSel.value = (c.DefaultLanguage || 'en');
+            if (dlSel) dlSel.value = (c.DefaultLanguage || 'zh');
             var uiSel = document.getElementById('abFcDefaultUiStyle');
             if (uiSel) uiSel.value = (c.DefaultUiStyle === 'revamp' ? 'revamp' : 'classic');
             var forceUiEl = document.getElementById('abFcForceDefaultUiStyle');
@@ -4583,7 +4586,7 @@ font-size:0.88em;
             RestrictBadgeVisibility: document.getElementById('abFcRestrictBadgeVisibility').checked,
             DisabledBadgeCategories: categories,
             WelcomeMessage: document.getElementById('abFcWelcomeMessage').value || '',
-            DefaultLanguage: (document.getElementById('abFcDefaultLanguage') || {}).value || 'en',
+            DefaultLanguage: (document.getElementById('abFcDefaultLanguage') || {}).value || 'zh',
             DefaultUiStyle: (document.getElementById('abFcDefaultUiStyle') || {}).value === 'revamp' ? 'revamp' : 'classic',
             ForceDefaultUiStyle: !!(document.getElementById('abFcForceDefaultUiStyle') || {}).checked,
             DefaultToastPosition: (document.getElementById('abFcDefaultToastPosition') || {}).value || 'top-right',

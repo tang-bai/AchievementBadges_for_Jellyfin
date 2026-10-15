@@ -32,10 +32,15 @@
     }
 
     // ===== i18n =====
+    // Language used when neither the user's preference nor the server's
+    // public-config has resolved yet (first paint, config fetch failed).
+    // Simplified Chinese, matching Plugin.DefaultLanguageCode and the
+    // server-side default in PluginConfiguration.
+    var AB_DEFAULT_LANG = 'zh';
     // Holds the currently loaded translation dictionary. Starts empty so tr()
     // gracefully falls back to the key (English-like) before translations load.
     var translations = {};
-    var currentLang = 'en';
+    var currentLang = AB_DEFAULT_LANG;
     function tr(key, fallback) {
         if (translations && Object.prototype.hasOwnProperty.call(translations, key)) {
             return translations[key];
@@ -68,8 +73,8 @@
     // Load a language bundle from the server. Resolves even on failure so
     // page load never blocks; tr() just keeps using its current dict.
     function loadTranslations(lang) {
-        var clean = (lang || 'en').toString().toLowerCase().replace(/[^a-z-]/g, '');
-        if (!clean) clean = 'en';
+        var clean = (lang || AB_DEFAULT_LANG).toString().toLowerCase().replace(/[^a-z-]/g, '');
+        if (!clean) clean = AB_DEFAULT_LANG;
         currentLang = clean;
         return fetchJson('Plugins/AchievementBadges/translations/' + clean)
             .then(function (data) { translations = data || {}; return translations; })
@@ -1596,7 +1601,7 @@
             });
         } else {
             slot.innerHTML = '<span class="ab-quest-reroll-used"' +
-                ' title="Available again ' + (period === 'weekly' ? 'Monday UTC' : 'at UTC midnight') + '"' +
+                ' title="' + tr('quests.available_again', 'Available again') + ' ' + (period === 'weekly' ? tr('quests.monday_utc', 'Monday UTC') : tr('quests.at_utc_midnight', 'at UTC midnight')) + '"' +
                 ' style="background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.55); border:1px solid rgba(255,255,255,0.1); padding:0.4em 0.95em; border-radius:999px; font-size:0.72em; font-weight:700; letter-spacing:0.06em; display:inline-flex; align-items:center; gap:0.35em;">' +
                 diceSvg(12) + '<span>' + usedLabel + '</span>' +
             '</span>';
@@ -3738,13 +3743,13 @@
                         '<div class="ab-toggle-info"><div class="ab-toggle-label">' + tr('settings.language', 'Language') + '</div><div class="ab-toggle-desc">' + tr('settings.language_desc', 'UI language for the achievements page') + '</div></div>' +
                         '<select class="ab-select" data-settings-select="language" id="abSaLanguageSelect">' +
                             '<option value="default"' + (prefLang === 'default' ? ' selected' : '') + '>' + tr('settings.language_default', 'Default (admin)') + '</option>' +
+                            '<option value="zh"' + (prefLang === 'zh' ? ' selected' : '') + '>' + tr('settings.language_zh', '简体中文') + '</option>' +
                             '<option value="en"' + (prefLang === 'en' ? ' selected' : '') + '>' + tr('settings.language_en', 'English') + '</option>' +
                             '<option value="fr"' + (prefLang === 'fr' ? ' selected' : '') + '>' + tr('settings.language_fr', 'Français') + '</option>' +
                             '<option value="es"' + (prefLang === 'es' ? ' selected' : '') + '>' + tr('settings.language_es', 'Español') + '</option>' +
                             '<option value="de"' + (prefLang === 'de' ? ' selected' : '') + '>' + tr('settings.language_de', 'Deutsch') + '</option>' +
                             '<option value="it"' + (prefLang === 'it' ? ' selected' : '') + '>' + tr('settings.language_it', 'Italiano') + '</option>' +
                             '<option value="pt"' + (prefLang === 'pt' ? ' selected' : '') + '>' + tr('settings.language_pt', 'Português') + '</option>' +
-                            '<option value="zh"' + (prefLang === 'zh' ? ' selected' : '') + '>' + tr('settings.language_zh', '中文') + '</option>' +
                             '<option value="ja"' + (prefLang === 'ja' ? ' selected' : '') + '>' + tr('settings.language_ja', '日本語') + '</option>' +
                         '</select>' +
                     '</div>' +
@@ -3834,7 +3839,7 @@
                     // Resolve the chosen language now (honor "default" -> admin).
                     var chosen = sel.value;
                     var pc = publicConfigGlobal || {};
-                    var adminLang = (pc.DefaultLanguage || pc.defaultLanguage || 'en').toString().toLowerCase();
+                    var adminLang = (pc.DefaultLanguage || pc.defaultLanguage || AB_DEFAULT_LANG).toString().toLowerCase();
                     var eff = (!chosen || chosen === 'default') ? adminLang : chosen;
                     // Keep the local prefs in sync with the user's choice.
                     prefs.Language = chosen;
@@ -4165,7 +4170,7 @@
             var p = parts[0] || {};
             var cfg = parts[1] || {};
             var userLang = (p.Language || p.language || 'default').toString().toLowerCase();
-            var adminLang = (cfg.DefaultLanguage || cfg.defaultLanguage || 'en').toString().toLowerCase();
+            var adminLang = (cfg.DefaultLanguage || cfg.defaultLanguage || AB_DEFAULT_LANG).toString().toLowerCase();
             var effective = (userLang === 'default' || !userLang) ? adminLang : userLang;
             return loadTranslations(effective).then(function () {
                 applyStaticTranslations();
@@ -4704,7 +4709,7 @@
             var cfg = values[0] || {};
             var prefs = values[1] || {};
             var chosen = (prefs.Language || prefs.language || 'default').toString().toLowerCase();
-            var adminLanguage = (cfg.DefaultLanguage || cfg.defaultLanguage || 'en').toString().toLowerCase();
+            var adminLanguage = (cfg.DefaultLanguage || cfg.defaultLanguage || AB_DEFAULT_LANG).toString().toLowerCase();
             var effectiveLanguage = !chosen || chosen === 'default' ? adminLanguage : chosen;
             return loadTranslations(effectiveLanguage).catch(function () { return {}; }).then(function () {
                 renderNativeNavigationSettings(findNativeUserSettingsHost(), prefs);

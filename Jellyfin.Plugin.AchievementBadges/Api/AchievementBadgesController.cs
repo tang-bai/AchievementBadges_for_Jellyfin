@@ -1262,8 +1262,10 @@ public class AchievementBadgesController : ControllerBase
         // payload can't bloat the on-disk profile with megabytes of attacker-
         // supplied data. (The ASP.NET request body limit still caps total
         // size, but these are the fields we actually round-trip into JSON.)
-        var allowedLangs = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "default", "en", "fr", "es", "de", "it", "pt", "zh", "ja" };
-        prefs.Language = string.IsNullOrWhiteSpace(prefs.Language) || !allowedLangs.Contains(prefs.Language)
+        // "default" is a real per-user choice: follow the admin's DefaultLanguage.
+        prefs.Language = string.IsNullOrWhiteSpace(prefs.Language)
+            || (!prefs.Language.Equals("default", StringComparison.OrdinalIgnoreCase)
+                && !Plugin.SupportedLanguages.Contains(prefs.Language))
             ? "default" : prefs.Language.ToLowerInvariant();
 
         var allowedThemes = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "default", "dark", "light" };
@@ -2562,7 +2564,7 @@ public class AchievementBadgesController : ControllerBase
             ForcePrivacyMode = c?.ForcePrivacyMode ?? false,
             ForceSpoilerMode = c?.ForceSpoilerMode ?? false,
             ForceExtremeSpoilerMode = c?.ForceExtremeSpoilerMode ?? false,
-            DefaultLanguage = c?.DefaultLanguage ?? "en",
+            DefaultLanguage = c?.DefaultLanguage ?? Plugin.DefaultLanguageCode,
             CustomXboxLogoSvg = c?.CustomXboxLogoSvg ?? "",
             ForceHideEquippedShowcase = c?.ForceHideEquippedShowcase ?? false,
             FriendsEnabled = c?.FriendsEnabled ?? true,
@@ -2613,7 +2615,7 @@ public class AchievementBadgesController : ControllerBase
             RestrictBadgeVisibility = c?.RestrictBadgeVisibility ?? false,
             DisabledBadgeCategories = c?.DisabledBadgeCategories ?? new List<string>(),
             WelcomeMessage = c?.WelcomeMessage ?? "",
-            DefaultLanguage = c?.DefaultLanguage ?? "en",
+            DefaultLanguage = c?.DefaultLanguage ?? Plugin.DefaultLanguageCode,
             TracearrUrl = c?.TracearrUrl ?? "",
             TracearrApiToken = c?.TracearrApiToken ?? "",
             CustomXboxLogoSvg = c?.CustomXboxLogoSvg ?? "",
@@ -2663,7 +2665,7 @@ public class AchievementBadgesController : ControllerBase
         public bool RestrictBadgeVisibility { get; set; } = false;
         public List<string> DisabledBadgeCategories { get; set; } = new();
         public string WelcomeMessage { get; set; } = "";
-        public string DefaultLanguage { get; set; } = "en";
+        public string DefaultLanguage { get; set; } = Plugin.DefaultLanguageCode;
 
         // [issue #45] Empty either field disables the Tracearr pass.
         public string TracearrUrl { get; set; } = "";
@@ -2731,10 +2733,10 @@ public class AchievementBadgesController : ControllerBase
         config.RestrictBadgeVisibility = request.RestrictBadgeVisibility;
         config.DisabledBadgeCategories = request.DisabledBadgeCategories ?? new();
         config.WelcomeMessage = request.WelcomeMessage ?? "";
-        // Only accept known language codes; default to "en".
-        var lang = (request.DefaultLanguage ?? "en").ToLowerInvariant();
-        var allowedLangs = new HashSet<string> { "en", "fr", "es", "de", "it", "pt", "zh", "ja" };
-        if (!allowedLangs.Contains(lang)) lang = "en";
+        // Only accept known language codes; anything unknown falls back to
+        // the shipped default (Simplified Chinese).
+        var lang = (request.DefaultLanguage ?? Plugin.DefaultLanguageCode).ToLowerInvariant();
+        if (!Plugin.SupportedLanguages.Contains(lang)) lang = Plugin.DefaultLanguageCode;
         config.DefaultLanguage = lang;
         config.TracearrUrl = (request.TracearrUrl ?? "").Trim();
         config.TracearrApiToken = (request.TracearrApiToken ?? "").Trim();

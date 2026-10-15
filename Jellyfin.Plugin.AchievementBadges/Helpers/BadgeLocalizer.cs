@@ -20,11 +20,6 @@ public static class BadgeLocalizer
 {
     private static readonly ConcurrentDictionary<string, Dictionary<string, Entry>?> _cache = new();
 
-    private static readonly HashSet<string> _supported = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "en", "fr", "es", "de", "it", "pt", "zh", "ja"
-    };
-
     private sealed class Entry
     {
         public string? title { get; set; }
@@ -36,10 +31,10 @@ public static class BadgeLocalizer
         var l = (lang ?? "").Trim().ToLowerInvariant();
         if (string.IsNullOrEmpty(l) || l == "default")
         {
-            l = Plugin.Instance?.Configuration?.DefaultLanguage ?? "en";
+            l = Plugin.Instance?.Configuration?.DefaultLanguage ?? Plugin.DefaultLanguageCode;
             l = l.ToLowerInvariant();
         }
-        if (!_supported.Contains(l)) l = "en";
+        if (!Plugin.SupportedLanguages.Contains(l)) l = Plugin.DefaultLanguageCode;
         return l;
     }
 

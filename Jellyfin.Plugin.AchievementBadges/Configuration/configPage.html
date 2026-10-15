@@ -2,7 +2,7 @@
      data-require="emby-input,emby-checkbox,emby-button">
     <div data-role="content">
         <div class="content-primary">
-            <h2>Achievement Badges Settings</h2>
+            <h2 data-i18n="cfg.page_title">Achievement Badges Settings</h2>
             <style>
                 #AchievementBadgesUserSelect {
                     max-width: 360px;
@@ -17,183 +17,183 @@
             </style>
 
                 <details open>
-                    <summary>General</summary>
+                    <summary data-i18n="cfg.sec_general">General</summary>
                     <div class="detailSection">
                         <div class="inputContainer">
                             <label class="emby-checkbox-label">
                                 <input type="checkbox" id="Enabled" is="emby-checkbox" />
-                                <span>Enable plugin</span>
+                                <span data-i18n="cfg.enable_plugin">Enable plugin</span>
                             </label>
                         </div>
                         <div class="inputContainer">
                             <label class="emby-checkbox-label">
                                 <input type="checkbox" id="ShowOnUserHome" is="emby-checkbox" />
-                                <span>Show on user home</span>
+                                <span data-i18n="cfg.show_on_home">Show on user home</span>
                             </label>
                         </div>
                         <div class="inputContainer">
                             <label class="emby-checkbox-label">
                                 <input type="checkbox" id="EnableDebugEndpoints" is="emby-checkbox" />
-                                <span>Enable debug API endpoints</span>
+                                <span data-i18n="cfg.enable_debug">Enable debug API endpoints</span>
                             </label>
                         </div>
                         <div class="inputContainer">
-                            <label class="inputLabel" for="MinimumPlaySecondsForCompletion">Minimum play seconds for completion</label>
+                            <label data-i18n="cfg.min_play_seconds" class="inputLabel" for="MinimumPlaySecondsForCompletion">Minimum play seconds for completion</label>
                             <input type="number" id="MinimumPlaySecondsForCompletion" is="emby-input" min="0" />
-                            <div class="fieldDescription">Number of seconds a session must last to count as a play completion.</div>
+                            <div data-i18n="cfg.min_play_seconds_desc" class="fieldDescription">Number of seconds a session must last to count as a play completion.</div>
                         </div>
                     </div>
                 </details>
 
                 <details>
-                    <summary>Page integrations</summary>
+                    <summary data-i18n="cfg.sec_page_integrations">Page integrations</summary>
                     <div class="detailSection">
-                        <p class="fieldDescription" style="margin-top:0;">
+                        <p class="fieldDescription" style="margin-top:0;" data-i18n="cfg.page_integrations_intro">
                             These optional hosts reuse the stock Achievements page. The stock page always remains available.
                         </p>
                         <div class="inputContainer">
                             <label class="emby-checkbox-label">
                                 <input type="checkbox" id="EnableCustomTabsIntegration" is="emby-checkbox" />
-                                <span>Enable Custom Tabs host</span>
+                                <span data-i18n="cfg.enable_custom_tabs">Enable Custom Tabs host</span>
                             </label>
-                            <div class="fieldDescription">Saving installs or repairs one Achievements entry in Custom Tabs. Existing tabs are preserved; restart Jellyfin afterward.</div>
+                            <div data-i18n="cfg.custom_tabs_desc" class="fieldDescription">Saving installs or repairs one Achievements entry in Custom Tabs. Existing tabs are preserved; restart Jellyfin afterward.</div>
                         </div>
                         <div class="inputContainer">
-                            <label class="inputLabel" for="CustomTabsMarker">Custom Tabs HTML</label>
+                            <label data-i18n="cfg.custom_tabs_html" class="inputLabel" for="CustomTabsMarker">Custom Tabs HTML</label>
                             <textarea id="CustomTabsMarker" is="emby-input" rows="2" readonly>&lt;div data-achievement-badges-host="custom-tabs"&gt;&lt;/div&gt;</textarea>
                             <button is="emby-button" type="button" class="raised emby-button" style="margin-top:.5em;"
                                     onclick="AchievementBadgesConfig.copyCustomTabsMarker()">
-                                <span>Copy marker</span>
+                                <span data-i18n="cfg.copy_marker">Copy marker</span>
                             </button>
                             <span id="CustomTabsCopyStatus" class="fieldDescription" style="margin-left:.5em;"></span>
                         </div>
                         <div class="inputContainer">
                             <label class="emby-checkbox-label">
                                 <input type="checkbox" id="EnablePluginPagesIntegration" is="emby-checkbox" />
-                                <span>Register with Plugin Pages</span>
+                                <span data-i18n="cfg.register_plugin_pages">Register with Plugin Pages</span>
                             </label>
-                            <div class="fieldDescription">Requires the Plugin Pages plugin. Restart Jellyfin after changing this option.</div>
+                            <div data-i18n="cfg.plugin_pages_desc" class="fieldDescription">Requires the Plugin Pages plugin. Restart Jellyfin after changing this option.</div>
                         </div>
                         <div class="inputContainer">
                             <label class="emby-checkbox-label">
                                 <input type="checkbox" id="EnableUserMenuShortcut" is="emby-checkbox" />
-                                <span>Add an Achievements shortcut near the user/profile menu</span>
+                                <span data-i18n="cfg.add_shortcut">Add an Achievements shortcut near the user/profile menu</span>
                             </label>
-                            <div class="fieldDescription">Adds a small trophy shortcut in Jellyfin's header without replacing any stock menu item.</div>
+                            <div data-i18n="cfg.add_shortcut_desc" class="fieldDescription">Adds a small trophy shortcut in Jellyfin's header without replacing any stock menu item.</div>
                         </div>
                     </div>
                 </details>
 
                 <details>
-                    <summary>Toasts &amp; Widgets</summary>
+                    <summary data-i18n="cfg.sec_toasts">Toasts &amp; Widgets</summary>
                     <div class="detailSection">
                         <div class="inputContainer">
                             <label class="emby-checkbox-label">
                                 <input type="checkbox" id="EnableUnlockToasts" is="emby-checkbox" />
-                                <span>Enable unlock toasts</span>
+                                <span data-i18n="cfg.enable_unlock_toasts">Enable unlock toasts</span>
                             </label>
                         </div>
                         <div class="inputContainer">
                             <label class="emby-checkbox-label">
                                 <input type="checkbox" id="EnableHomeWidget" is="emby-checkbox" />
-                                <span>Enable home widget</span>
+                                <span data-i18n="cfg.enable_home_widget">Enable home widget</span>
                             </label>
                         </div>
                         <div class="inputContainer">
                             <label class="emby-checkbox-label">
                                 <input type="checkbox" id="EnableItemDetailRibbon" is="emby-checkbox" />
-                                <span>Enable item detail ribbon</span>
+                                <span data-i18n="cfg.enable_item_ribbon">Enable item detail ribbon</span>
                             </label>
                         </div>
                         <div class="inputContainer">
                             <div style="display:flex;gap:.65em;flex-wrap:wrap;">
                                 <button is="emby-button" type="button" class="raised emby-button"
                                         onclick="AchievementBadgesConfig.testDescriptionToast()">
-                                    <span>Test description toast</span>
+                                    <span data-i18n="cfg.test_desc_toast">Test description toast</span>
                                 </button>
                                 <button is="emby-button" type="button" class="raised emby-button"
                                         onclick="AchievementBadgesConfig.testUnlockBatch()">
-                                    <span>Test 10 unlocks</span>
+                                    <span data-i18n="cfg.test_10_unlocks">Test 10 unlocks</span>
                                 </button>
                             </div>
-                            <div class="fieldDescription">Preview one description toast, or send ten synthetic unlocks through the current admin user's grouped/individual toast setting. Test unlocks do not change achievement data.</div>
+                            <div class="fieldDescription" data-i18n="cfg.test_toast_desc">Preview one description toast, or send ten synthetic unlocks through the current admin user's grouped/individual toast setting. Test unlocks do not change achievement data.</div>
                         </div>
                     </div>
                 </details>
 
                 <details>
-                    <summary>🛡 Integrity &amp; anti-abuse</summary>
+                    <summary data-i18n="cfg.sec_integrity">🛡 Integrity &amp; anti-abuse</summary>
                     <div class="detailSection">
-                        <p class="fieldDescription" style="margin-top:0;">
+                        <p class="fieldDescription" style="margin-top:0;" data-i18n="cfg.integrity_intro">
                             v1.9.8 anti-abuse controls. The playback-credit gate (80% real-watch required, position seeks excluded, items under 60s rejected as prerolls) is always on. These settings add a daily soft-cap and an audit-log flag for users hitting unusual rates.
                         </p>
                         <div class="inputContainer">
                             <label class="emby-checkbox-label">
                                 <input type="checkbox" id="EnableDailyCreditCap" is="emby-checkbox" />
-                                <span>Enable daily credit cap</span>
+                                <span data-i18n="cfg.enable_daily_cap">Enable daily credit cap</span>
                             </label>
                         </div>
                         <div class="inputContainer">
-                            <label class="inputLabel" for="DailyCreditCap">Daily cap (items per user per UTC day)</label>
+                            <label data-i18n="cfg.daily_cap" class="inputLabel" for="DailyCreditCap">Daily cap (items per user per UTC day)</label>
                             <input type="number" id="DailyCreditCap" is="emby-input" min="1" max="10000" />
-                            <div class="fieldDescription">Real users never hit this. Default 200.</div>
+                            <div data-i18n="cfg.daily_cap_desc" class="fieldDescription">Real users never hit this. Default 200.</div>
                         </div>
                         <div class="inputContainer">
                             <label class="emby-checkbox-label">
                                 <input type="checkbox" id="EnableSuspiciousActivityFlag" is="emby-checkbox" />
-                                <span>Enable suspicious-rate audit flag</span>
+                                <span data-i18n="cfg.enable_rate_flag">Enable suspicious-rate audit flag</span>
                             </label>
                         </div>
                         <div class="inputContainer">
-                            <label class="inputLabel" for="SuspiciousRatePerHour">Flag threshold (credits per rolling hour)</label>
+                            <label data-i18n="cfg.rate_threshold" class="inputLabel" for="SuspiciousRatePerHour">Flag threshold (credits per rolling hour)</label>
                             <input type="number" id="SuspiciousRatePerHour" is="emby-input" min="1" max="1000" />
-                            <div class="fieldDescription">Doesn't block; just records "suspicious_rate" in the audit log. Throttled to once per user per hour.</div>
+                            <div class="fieldDescription" data-i18n="cfg.rate_threshold_desc">Doesn't block; just records "suspicious_rate" in the audit log. Throttled to once per user per hour.</div>
                         </div>
 
                         <hr style="border:none; border-top:1px solid rgba(255,255,255,.08); margin:1em 0;" />
-                        <p class="fieldDescription"><strong>Test injection</strong> — drive N fake credited playbacks through the real path to verify cap+flag actually fire. Use on a throwaway test user.</p>
+                        <p class="fieldDescription"><strong data-i18n="cfg.test_injection">Test injection</strong> <span data-i18n="cfg.test_injection_desc">— drive N fake credited playbacks through the real path to verify cap+flag actually fire. Use on a throwaway test user.</span></p>
                         <div class="inputContainer">
-                            <label class="inputLabel" for="AchievementBadgesTestUserSelect">Target user</label>
+                            <label data-i18n="cfg.target_user" class="inputLabel" for="AchievementBadgesTestUserSelect">Target user</label>
                             <select id="AchievementBadgesTestUserSelect" style="width:100%;max-width:360px;padding:.6em;background:#05070a;color:#f8fafc;border:1px solid rgba(255,255,255,.25);border-radius:4px;color-scheme:dark;">
-                                <option value="">Loading users...</option>
+                                <option value="" data-i18n="cfg.loading_users">Loading users...</option>
                             </select>
                         </div>
                         <div class="inputContainer">
-                            <label class="inputLabel" for="AchievementBadgesTestCount">Number of events</label>
+                            <label data-i18n="cfg.number_of_events" class="inputLabel" for="AchievementBadgesTestCount">Number of events</label>
                             <input type="number" id="AchievementBadgesTestCount" is="emby-input" min="1" max="500" value="50" />
                         </div>
                         <div class="inputContainer">
                             <label class="emby-checkbox-label">
                                 <input type="checkbox" id="AchievementBadgesTestIsMovie" is="emby-checkbox" />
-                                <span>Credit as movies (default: episodes)</span>
+                                <span data-i18n="cfg.credit_as_movies">Credit as movies (default: episodes)</span>
                             </label>
                         </div>
                         <div class="inputContainer">
                             <button is="emby-button" type="button" class="raised emby-button"
                                     onclick="AchievementBadgesConfig.runIntegrityTest()">
-                                <span>Run injection</span>
+                                <span data-i18n="cfg.run_injection">Run injection</span>
                             </button>
                             <div id="AchievementBadgesTestStatus" class="fieldDescription"></div>
                         </div>
 
                         <hr style="border:none; border-top:1px solid rgba(255,255,255,.08); margin:1em 0;" />
-                        <p class="fieldDescription"><strong>Manual badge revoke</strong> — un-award a specific badge from a specific user. Audit-logged.</p>
+                        <p class="fieldDescription"><strong data-i18n="cfg.manual_revoke">Manual badge revoke</strong> <span data-i18n="cfg.manual_revoke_desc">— un-award a specific badge from a specific user. Audit-logged.</span></p>
                         <div class="inputContainer">
-                            <label class="inputLabel" for="AchievementBadgesRevokeUserSelect">User</label>
+                            <label class="inputLabel" for="AchievementBadgesRevokeUserSelect" data-i18n="cfg.user">User</label>
                             <select id="AchievementBadgesRevokeUserSelect" style="width:100%;max-width:360px;padding:.6em;background:#05070a;color:#f8fafc;border:1px solid rgba(255,255,255,.25);border-radius:4px;color-scheme:dark;">
-                                <option value="">Loading users...</option>
+                                <option value="" data-i18n="cfg.loading_users">Loading users...</option>
                             </select>
                         </div>
                         <div class="inputContainer">
-                            <label class="inputLabel" for="AchievementBadgesRevokeBadgeId">Badge id to revoke</label>
-                            <input type="text" id="AchievementBadgesRevokeBadgeId" is="emby-input" placeholder="e.g. film-buff" />
-                            <div class="fieldDescription">Badge ids show in the user's profile JSON or the badge catalog.</div>
+                            <label data-i18n="cfg.badge_id_revoke" class="inputLabel" for="AchievementBadgesRevokeBadgeId">Badge id to revoke</label>
+                            <input type="text" id="AchievementBadgesRevokeBadgeId" is="emby-input" placeholder="e.g. film-buff" data-i18n-placeholder="cfg.ph_badge_id" />
+                            <div class="fieldDescription" data-i18n="cfg.badge_id_hint">Badge ids show in the user's profile JSON or the badge catalog.</div>
                         </div>
                         <div class="inputContainer">
                             <button is="emby-button" type="button" class="raised emby-button"
                                     style="background:rgba(244,63,94,0.2);border:1px solid #f43f5e;color:#f43f5e;"
                                     onclick="AchievementBadgesConfig.revokeBadge()">
-                                <span>Revoke badge</span>
+                                <span data-i18n="cfg.revoke_badge">Revoke badge</span>
                             </button>
                             <div id="AchievementBadgesRevokeStatus" class="fieldDescription"></div>
                         </div>
@@ -201,226 +201,226 @@
                 </details>
 
                 <details>
-                    <summary>Advanced testing</summary>
+                    <summary data-i18n="cfg.sec_advanced_testing">Advanced testing</summary>
                     <div class="detailSection">
                         <div class="inputContainer">
-                            <label class="inputLabel" for="AchievementBadgesUserSelect">Server user</label>
+                            <label data-i18n="cfg.server_user" class="inputLabel" for="AchievementBadgesUserSelect">Server user</label>
                             <select id="AchievementBadgesUserSelect" style="width:100%;max-width:360px;padding:.6em;background:#05070a;color:#f8fafc;border:1px solid rgba(255,255,255,.25);border-radius:4px;color-scheme:dark;">
-                                <option value="">Loading users...</option>
+                                <option value="" data-i18n="cfg.loading_users">Loading users...</option>
                             </select>
-                            <div class="fieldDescription">Pick a server user, then open their achievement profile for testing.</div>
+                            <div class="fieldDescription" data-i18n="cfg.server_user_desc">Pick a server user, then open their achievement profile for testing.</div>
                         </div>
                         <div class="inputContainer" style="display:flex;gap:.75em;flex-wrap:wrap;">
                             <button is="emby-button" type="button" class="raised emby-button"
                                     onclick="AchievementBadgesConfig.loadUsers()">
-                                <span>Refresh users</span>
+                                <span data-i18n="cfg.refresh_users">Refresh users</span>
                             </button>
                             <button is="emby-button" type="button" class="raised emby-button"
                                     onclick="AchievementBadgesConfig.openSelectedUser()">
-                                <span>Load selected user</span>
+                                <span data-i18n="cfg.load_selected_user">Load selected user</span>
                             </button>
                         </div>
                     </div>
                 </details>
 
                 <details>
-                    <summary>Webhook</summary>
+                    <summary data-i18n="cfg.sec_webhook">Webhook</summary>
                     <div class="detailSection">
                         <div class="inputContainer">
                             <label class="emby-checkbox-label">
                                 <input type="checkbox" id="WebhookEnabled" is="emby-checkbox" />
-                                <span>Enable webhook notifications</span>
+                                <span data-i18n="cfg.enable_webhook">Enable webhook notifications</span>
                             </label>
                         </div>
                         <div class="inputContainer">
-                            <label class="inputLabel" for="WebhookUrl">Webhook URL</label>
+                            <label data-i18n="cfg.webhook_url" class="inputLabel" for="WebhookUrl">Webhook URL</label>
                             <input type="text" id="WebhookUrl" is="emby-input" />
-                            <div class="fieldDescription">URL to send achievement unlock notifications to.</div>
+                            <div data-i18n="cfg.webhook_url_desc" class="fieldDescription">URL to send achievement unlock notifications to.</div>
                         </div>
                         <div class="inputContainer">
-                            <label class="inputLabel" for="WebhookMessageTemplate">Webhook message template</label>
+                            <label data-i18n="cfg.webhook_template" class="inputLabel" for="WebhookMessageTemplate">Webhook message template</label>
                             <input type="text" id="WebhookMessageTemplate" is="emby-input" />
-                            <div class="fieldDescription">Placeholders: {user}, {badge}, {rarity}, {description}</div>
+                            <div data-i18n="cfg.webhook_template_desc" class="fieldDescription">Placeholders: {user}, {badge}, {rarity}, {description}</div>
                         </div>
                     </div>
                 </details>
 
                 <details>
-                    <summary>Feature Controls</summary>
+                    <summary data-i18n="cfg.sec_features">Feature Controls</summary>
                     <div class="detailSection">
                         <div class="inputContainer">
                             <label class="emby-checkbox-label">
                                 <input type="checkbox" id="LeaderboardEnabled" is="emby-checkbox" />
-                                <span>Enable leaderboard</span>
+                                <span data-i18n="cfg.enable_leaderboard">Enable leaderboard</span>
                             </label>
                         </div>
                         <div class="inputContainer">
                             <label class="emby-checkbox-label">
                                 <input type="checkbox" id="CompareEnabled" is="emby-checkbox" />
-                                <span>Enable compare profiles</span>
+                                <span data-i18n="cfg.enable_compare">Enable compare profiles</span>
                             </label>
                         </div>
                         <div class="inputContainer">
                             <label class="emby-checkbox-label">
                                 <input type="checkbox" id="ActivityFeedEnabled" is="emby-checkbox" />
-                                <span>Enable activity feed</span>
+                                <span data-i18n="cfg.enable_activity_feed">Enable activity feed</span>
                             </label>
                         </div>
                         <div class="inputContainer">
                             <label class="emby-checkbox-label">
                                 <input type="checkbox" id="PrestigeEnabled" is="emby-checkbox" />
-                                <span>Enable prestige system</span>
+                                <span data-i18n="cfg.enable_prestige">Enable prestige system</span>
                             </label>
                         </div>
                         <div class="inputContainer">
                             <label class="emby-checkbox-label">
                                 <input type="checkbox" id="QuestsEnabled" is="emby-checkbox" />
-                                <span>Enable quests</span>
+                                <span data-i18n="cfg.enable_quests">Enable quests</span>
                             </label>
                         </div>
                         <div class="inputContainer">
                             <label class="emby-checkbox-label">
                                 <input type="checkbox" id="ForcePrivacyMode" is="emby-checkbox" />
-                                <span>Force privacy mode</span>
+                                <span data-i18n="cfg.force_privacy">Force privacy mode</span>
                             </label>
-                            <div class="fieldDescription">Override all users to hidden from all social features.</div>
+                            <div data-i18n="cfg.force_privacy_desc" class="fieldDescription">Override all users to hidden from all social features.</div>
                         </div>
                         <div class="inputContainer">
-                            <label class="inputLabel" for="MaxEquippedBadges">Maximum equipped badges</label>
+                            <label data-i18n="cfg.max_equipped" class="inputLabel" for="MaxEquippedBadges">Maximum equipped badges</label>
                             <input type="number" id="MaxEquippedBadges" is="emby-input" min="1" max="10" />
-                            <div class="fieldDescription">Number of badges a user can equip in their showcase (1-10).</div>
+                            <div data-i18n="cfg.max_equipped_desc" class="fieldDescription">Number of badges a user can equip in their showcase (1-10).</div>
                         </div>
                         <div class="inputContainer">
                             <label class="emby-checkbox-label">
                                 <input type="checkbox" id="RestrictBadgeVisibility" is="emby-checkbox" />
-                                <span>Restrict badge visibility</span>
+                                <span data-i18n="cfg.restrict_visibility">Restrict badge visibility</span>
                             </label>
-                            <div class="fieldDescription">Users can only see their own badges.</div>
+                            <div data-i18n="cfg.restrict_visibility_desc" class="fieldDescription">Users can only see their own badges.</div>
                         </div>
                         <div class="inputContainer">
-                            <label class="inputLabel" for="DisabledBadgeCategories">Disabled badge categories</label>
+                            <label data-i18n="cfg.disabled_categories" class="inputLabel" for="DisabledBadgeCategories">Disabled badge categories</label>
                             <input type="text" id="DisabledBadgeCategories" is="emby-input" />
-                            <div class="fieldDescription">Comma-separated list of badge categories to disable, e.g. Late Night, Early Morning</div>
+                            <div data-i18n="cfg.disabled_categories_desc" class="fieldDescription">Comma-separated list of badge categories to disable, e.g. Late Night, Early Morning</div>
                         </div>
                         <div class="inputContainer">
-                            <label class="inputLabel" for="WelcomeMessage">Welcome message</label>
+                            <label data-i18n="cfg.welcome_message" class="inputLabel" for="WelcomeMessage">Welcome message</label>
                             <input type="text" id="WelcomeMessage" is="emby-input" />
-                            <div class="fieldDescription">Custom text shown on the achievements page.</div>
+                            <div data-i18n="cfg.welcome_message_desc" class="fieldDescription">Custom text shown on the achievements page.</div>
                         </div>
                     </div>
                 </details>
 
                 <!-- [v2.1.0 "Open Library" M4] Custom badges admin UI ─────── -->
                 <details>
-                    <summary>Custom Badges (v2.1.0)</summary>
+                    <summary data-i18n="cfg.sec_custom_badges">Custom Badges (v2.1.0)</summary>
                     <div class="detailSection">
                         <p style="color:rgba(255,255,255,.6);font-size:.9em;margin:0 0 .8em;">
-                            Admin-defined badges with simple criteria (single metric + threshold) via the form below.
-                            For compound <strong>AND/OR</strong> criteria, icon hosting, and import/export, see the
-                            <a href="https://github.com/ZL154/AchievementBadges_for_Jellyfin#custom-badges" target="_blank" rel="noopener" style="color:#ffd54a;">Custom Badges guide in the README</a>
-                            — it has a copy-paste JSON template for the <code>POST /Plugins/AchievementBadges/custom-badges</code> API.
+                            <span data-i18n="cfg.custom_badges_intro">Admin-defined badges with simple criteria (single metric + threshold) via the form below.</span>
+                            <span data-i18n="cfg.custom_badges_intro_more">For compound</span> <strong>AND/OR</strong> <span data-i18n="cfg.custom_badges_intro_more2">criteria, icon hosting, and import/export, see the</span>
+                            <a href="https://github.com/ZL154/AchievementBadges_for_Jellyfin#custom-badges" target="_blank" rel="noopener" style="color:#ffd54a;" data-i18n="cfg.custom_badges_guide_link">Custom Badges guide in the README</a>
+                            <span data-i18n="cfg.custom_badges_intro_api">— it has a copy-paste JSON template for the</span> <code>POST /Plugins/AchievementBadges/custom-badges</code> <span data-i18n="cfg.custom_badges_intro_api2">API.</span>
                         </p>
                         <div id="CustomBadgesList" style="margin-bottom:1em;color:rgba(255,255,255,.7);font-size:.9em;">
-                            Loading...
+                            <span data-i18n="common.loading">Loading...</span>
                         </div>
                         <button is="emby-button" type="button" class="raised emby-button"
                                 onclick="AchievementBadgesConfig.loadCustomBadges()" style="margin-bottom:1em;">
-                            <span>Refresh</span>
+                            <span data-i18n="cfg.refresh">Refresh</span>
                         </button>
                         <hr style="border:none; border-top:1px solid rgba(255,255,255,.08); margin:1em 0;" />
-                        <h4 style="margin:.6em 0;">Create new badge</h4>
+                        <h4 data-i18n="cfg.create_badge" style="margin:.6em 0;">Create new badge</h4>
                         <div class="inputContainer">
-                            <label class="inputLabel" for="NewBadgeName">Name</label>
-                            <input type="text" id="NewBadgeName" is="emby-input" placeholder="My Custom Badge" />
+                            <label class="inputLabel" for="NewBadgeName" data-i18n="cfg.name">Name</label>
+                            <input type="text" id="NewBadgeName" is="emby-input" placeholder="My Custom Badge" data-i18n-placeholder="cfg.ph_badge_name" />
                         </div>
                         <div class="inputContainer">
-                            <label class="inputLabel" for="NewBadgeDescription">Description</label>
-                            <input type="text" id="NewBadgeDescription" is="emby-input" placeholder="Reach the goal." />
+                            <label data-i18n="cfg.description" class="inputLabel" for="NewBadgeDescription">Description</label>
+                            <input type="text" id="NewBadgeDescription" is="emby-input" placeholder="Reach the goal." data-i18n-placeholder="cfg.ph_badge_desc" />
                         </div>
                         <div class="inputContainer">
-                            <label class="inputLabel" for="NewBadgeRarity">Rarity</label>
+                            <label class="inputLabel" for="NewBadgeRarity" data-i18n="cfg.rarity">Rarity</label>
                             <select id="NewBadgeRarity" is="emby-select">
-                                <option value="Common">Common</option>
-                                <option value="Uncommon">Uncommon</option>
-                                <option value="Rare">Rare</option>
-                                <option value="Epic">Epic</option>
-                                <option value="Legendary">Legendary</option>
-                                <option value="Mythic">Mythic</option>
+                                <option value="Common" data-i18n="rarity.common">Common</option>
+                                <option value="Uncommon" data-i18n="rarity.uncommon">Uncommon</option>
+                                <option value="Rare" data-i18n="rarity.rare">Rare</option>
+                                <option value="Epic" data-i18n="rarity.epic">Epic</option>
+                                <option value="Legendary" data-i18n="rarity.legendary">Legendary</option>
+                                <option value="Mythic" data-i18n="rarity.mythic">Mythic</option>
                             </select>
                         </div>
                         <div class="inputContainer">
-                            <label class="inputLabel" for="NewBadgeMedia">Media type</label>
+                            <label data-i18n="cfg.media_type" class="inputLabel" for="NewBadgeMedia">Media type</label>
                             <select id="NewBadgeMedia" is="emby-select">
-                                <option value="Film">Film</option>
-                                <option value="TV">TV</option>
-                                <option value="Music">Music</option>
-                                <option value="Book">Book</option>
-                                <option value="Game">Game (JellyEmu)</option>
-                                <option value="Anime">Anime</option>
-                                <option value="Multi" selected>Multi</option>
+                                <option value="Film" data-i18n="cfg.media_film">Film</option>
+                                <option value="TV" data-i18n="cfg.media_tv">TV</option>
+                                <option value="Music" data-i18n="cfg.media_music">Music</option>
+                                <option value="Book" data-i18n="cfg.media_book">Book</option>
+                                <option value="Game" data-i18n="cfg.media_game">Game (JellyEmu)</option>
+                                <option value="Anime" data-i18n="cfg.media_anime">Anime</option>
+                                <option value="Multi" selected data-i18n="cfg.media_multi">Multi</option>
                             </select>
                         </div>
                         <div class="inputContainer">
-                            <label class="inputLabel" for="NewBadgeMetric">Metric</label>
+                            <label data-i18n="cfg.metric" class="inputLabel" for="NewBadgeMetric">Metric</label>
                             <select id="NewBadgeMetric" is="emby-select">
-                                <option value="TotalItemsWatched">Total items watched</option>
-                                <option value="MoviesWatched">Movies watched</option>
-                                <option value="SeriesCompleted">Series completed</option>
-                                <option value="MusicPlaysTotal">Music plays (total)</option>
-                                <option value="MusicListeningHours">Music listening hours</option>
-                                <option value="UniqueMusicAlbums">Unique music albums</option>
-                                <option value="UniqueMusicArtists">Unique music artists</option>
-                                <option value="UniqueMusicGenres">Unique music genres</option>
-                                <option value="UniqueMusicDecades">Unique music decades</option>
-                                <option value="MusicGenrePlays" data-param="genre">Music plays of a genre&hellip;</option>
-                                <option value="MusicGenreListeningHours" data-param="genre">Music hours of a genre&hellip;</option>
-                                <option value="BooksCompleted">Books completed</option>
-                                <option value="AudiobookListeningHours">Audiobook listening hours</option>
-                                <option value="UniqueBookSeriesCompleted">Unique book series completed</option>
-                                <option value="AnimeItemsWatched">Anime items watched</option>
-                                <option value="DaysWatched">Days watched</option>
-                                <option value="CurrentWatchStreak">Current watch streak</option>
-                                <option value="BestWatchStreak">Best watch streak</option>
-                                <option value="UniqueGenresWatched">Unique genres watched</option>
-                                <option value="GenreItemsWatched" data-param="genre">Items watched of a genre&hellip;</option>
-                                <option value="UniqueLanguagesWatched">Unique languages watched</option>
-                                <option value="UniqueCountriesWatched">Unique countries watched</option>
-                                <option value="ContainerCompletionPercent" data-param="target" data-target-kinds="Series,Season,BoxSet,Playlist,MusicAlbum">Completion of one series, season or collection&hellip;</option>
-                                <option value="ItemPlayCount" data-param="target" data-target-kinds="Movie,Episode,Audio,Book">Plays of one specific item&hellip;</option>
-                                <option value="GamePlays">Game sessions played (JellyEmu)</option>
-                                <option value="GamePlayHours">Game hours played (JellyEmu)</option>
-                                <option value="UniqueGamesPlayed">Different games played (JellyEmu)</option>
-                                <option value="UniqueGamePlatforms">Different game platforms played (JellyEmu)</option>
-                                <option value="GamePlatformGames" data-param="platform">Different games on a platform&hellip;</option>
-                                <option value="GameStudioGames" data-param="studio">Different games from a developer or publisher&hellip;</option>
-                                <option value="GameHours" data-param="target" data-target-kinds="Book" data-target-tags="JellyEmu">Hours in one specific game&hellip;</option>
+                                <option value="TotalItemsWatched" data-i18n="metric.TotalItemsWatched">Total items watched</option>
+                                <option value="MoviesWatched" data-i18n="metric.MoviesWatched">Movies watched</option>
+                                <option value="SeriesCompleted" data-i18n="metric.SeriesCompleted">Series completed</option>
+                                <option value="MusicPlaysTotal" data-i18n="cfg.metric_MusicPlaysTotal">Music plays (total)</option>
+                                <option value="MusicListeningHours" data-i18n="cfg.metric_MusicListeningHours">Music listening hours</option>
+                                <option value="UniqueMusicAlbums" data-i18n="cfg.metric_UniqueMusicAlbums">Unique music albums</option>
+                                <option value="UniqueMusicArtists" data-i18n="cfg.metric_UniqueMusicArtists">Unique music artists</option>
+                                <option value="UniqueMusicGenres" data-i18n="cfg.metric_UniqueMusicGenres">Unique music genres</option>
+                                <option value="UniqueMusicDecades" data-i18n="cfg.metric_UniqueMusicDecades">Unique music decades</option>
+                                <option value="MusicGenrePlays" data-param="genre" data-i18n="cfg.metric_MusicGenrePlays">Music plays of a genre&hellip;</option>
+                                <option value="MusicGenreListeningHours" data-param="genre" data-i18n="cfg.metric_MusicGenreListeningHours">Music hours of a genre&hellip;</option>
+                                <option value="BooksCompleted" data-i18n="cfg.metric_BooksCompleted">Books completed</option>
+                                <option value="AudiobookListeningHours" data-i18n="cfg.metric_AudiobookListeningHours">Audiobook listening hours</option>
+                                <option value="UniqueBookSeriesCompleted" data-i18n="cfg.metric_UniqueBookSeriesCompleted">Unique book series completed</option>
+                                <option value="AnimeItemsWatched" data-i18n="cfg.metric_AnimeItemsWatched">Anime items watched</option>
+                                <option value="DaysWatched" data-i18n="metric.DaysWatched">Days watched</option>
+                                <option value="CurrentWatchStreak" data-i18n="metric.CurrentWatchStreak">Current watch streak</option>
+                                <option value="BestWatchStreak" data-i18n="metric.BestWatchStreak">Best watch streak</option>
+                                <option value="UniqueGenresWatched" data-i18n="metric.UniqueGenresWatched">Unique genres watched</option>
+                                <option value="GenreItemsWatched" data-param="genre" data-i18n="cfg.metric_GenreItemsWatched">Items watched of a genre&hellip;</option>
+                                <option value="UniqueLanguagesWatched" data-i18n="metric.UniqueLanguagesWatched">Unique languages watched</option>
+                                <option value="UniqueCountriesWatched" data-i18n="metric.UniqueCountriesWatched">Unique countries watched</option>
+                                <option value="ContainerCompletionPercent" data-i18n="cfg.metric_ContainerCompletionPercent" data-param="target" data-target-kinds="Series,Season,BoxSet,Playlist,MusicAlbum">Completion of one series, season or collection&hellip;</option>
+                                <option value="ItemPlayCount" data-i18n="cfg.metric_ItemPlayCount" data-param="target" data-target-kinds="Movie,Episode,Audio,Book">Plays of one specific item&hellip;</option>
+                                <option value="GamePlays" data-i18n="cfg.metric_GamePlays">Game sessions played (JellyEmu)</option>
+                                <option value="GamePlayHours" data-i18n="cfg.metric_GamePlayHours">Game hours played (JellyEmu)</option>
+                                <option value="UniqueGamesPlayed" data-i18n="cfg.metric_UniqueGamesPlayed">Different games played (JellyEmu)</option>
+                                <option value="UniqueGamePlatforms" data-i18n="cfg.metric_UniqueGamePlatforms">Different game platforms played (JellyEmu)</option>
+                                <option value="GamePlatformGames" data-param="platform" data-i18n="cfg.metric_GamePlatformGames">Different games on a platform&hellip;</option>
+                                <option value="GameStudioGames" data-param="studio" data-i18n="cfg.metric_GameStudioGames">Different games from a developer or publisher&hellip;</option>
+                                <option value="GameHours" data-i18n="cfg.metric_GameHours" data-param="target" data-target-kinds="Book" data-target-tags="JellyEmu">Hours in one specific game&hellip;</option>
                             </select>
                         </div>
                         <div class="inputContainer" id="NewBadgeParamRow" style="display:none;">
-                            <label class="inputLabel" for="NewBadgeParam">Genre filter</label>
-                            <input type="text" id="NewBadgeParam" is="emby-input" placeholder="e.g. Disco" />
-                            <div class="fieldDescription" style="color:rgba(255,255,255,.5);font-size:.85em;margin-top:.2em;">The genre to filter by (case-insensitive) &mdash; must match how it's tagged in your library.</div>
+                            <label data-i18n="cfg.genre_filter" class="inputLabel" for="NewBadgeParam">Genre filter</label>
+                            <input type="text" id="NewBadgeParam" is="emby-input" placeholder="e.g. Disco" data-i18n-placeholder="cfg.ph_genre" />
+                            <div class="fieldDescription" style="color:rgba(255,255,255,.5);font-size:.85em;margin-top:.2em;" data-i18n="cfg.genre_filter_desc">The genre to filter by (case-insensitive) &mdash; must match how it's tagged in your library.</div>
                             <div id="NewBadgeTargetPicker" style="display:none;">
-                                <label class="inputLabel" for="NewBadgeTargetSearch">Search the library</label>
-                                <input type="text" id="NewBadgeTargetSearch" is="emby-input" placeholder="e.g. One Piece" />
-                                <label class="inputLabel" for="NewBadgeTargetResults" style="margin-top:.4em;">Target</label>
+                                <label data-i18n="cfg.search_library" class="inputLabel" for="NewBadgeTargetSearch">Search the library</label>
+                                <input type="text" id="NewBadgeTargetSearch" is="emby-input" placeholder="e.g. One Piece" data-i18n-placeholder="cfg.ph_search" />
+                                <label data-i18n="cfg.target" class="inputLabel" for="NewBadgeTargetResults" style="margin-top:.4em;">Target</label>
                                 <select id="NewBadgeTargetResults" is="emby-select">
-                                    <option value="">Type to search&hellip;</option>
+                                    <option value="" data-i18n="cfg.type_to_search">Type to search&hellip;</option>
                                 </select>
-                                <div class="fieldDescription" style="color:rgba(255,255,255,.5);font-size:.85em;margin-top:.2em;">Collections and playlists cover arbitrary groupings, for example one story arc.</div>
+                                <div class="fieldDescription" style="color:rgba(255,255,255,.5);font-size:.85em;margin-top:.2em;" data-i18n="cfg.target_desc">Collections and playlists cover arbitrary groupings, for example one story arc.</div>
                             </div>
                         </div>
                         <div class="inputContainer">
-                            <label class="inputLabel" for="NewBadgeThreshold">Threshold</label>
+                            <label data-i18n="cfg.threshold" class="inputLabel" for="NewBadgeThreshold">Threshold</label>
                             <input type="number" id="NewBadgeThreshold" is="emby-input" min="1" value="10" />
                         </div>
                         <div class="inputContainer">
-                            <label class="inputLabel" for="NewBadgeIconUrl">Icon URL (optional)</label>
-                            <input type="text" id="NewBadgeIconUrl" is="emby-input" placeholder="https://... or leave blank for default" />
+                            <label data-i18n="cfg.icon_url" class="inputLabel" for="NewBadgeIconUrl">Icon URL (optional)</label>
+                            <input type="text" id="NewBadgeIconUrl" is="emby-input" placeholder="https://... or leave blank for default" data-i18n-placeholder="cfg.ph_icon_url" />
                         </div>
                         <button is="emby-button" type="button" class="raised emby-button"
                                 onclick="AchievementBadgesConfig.createCustomBadge()">
-                            <span>Create badge</span>
+                            <span data-i18n="cfg.btn_create_badge">Create badge</span>
                         </button>
                         <div id="CustomBadgesStatus" style="margin-top:.6em;color:rgba(255,255,255,.7);font-size:.9em;"></div>
                     </div>
@@ -428,21 +428,21 @@
 
                 <!-- [v2.1.0 "Open Library" M6] Time-windowed audit + cleanup ── -->
                 <details>
-                    <summary>Audit + clean up wrongly-awarded daily badges (v2.1.0)</summary>
+                    <summary data-i18n="cfg.sec_audit">Audit + clean up wrongly-awarded daily badges (v2.1.0)</summary>
                     <div class="detailSection">
-                        <p style="color:rgba(255,255,255,.6);font-size:.9em;margin:0 0 .8em;">
+                        <p style="color:rgba(255,255,255,.6);font-size:.9em;margin:0 0 .8em;" data-i18n="cfg.audit_intro">
                             Scans every user profile for daily / weekly / monthly badges that were incorrectly awarded by the pre-v2.1.0 backfill (issue #27). Review the report before clicking "Clean up".
                         </p>
                         <button is="emby-button" type="button" class="raised emby-button"
                                 onclick="AchievementBadgesConfig.runAudit()">
-                            <span>Run audit</span>
+                            <span data-i18n="cfg.run_audit">Run audit</span>
                         </button>
                         <div id="AuditReportSummary" style="margin-top:.8em;color:rgba(255,255,255,.7);font-size:.9em;"></div>
                         <div id="AuditReportTable" style="margin-top:.8em;max-height:360px;overflow:auto;border:1px solid rgba(255,255,255,.08);padding:.5em;display:none;"></div>
                         <button is="emby-button" type="button" class="raised emby-button" id="CleanupBtn"
                                 onclick="AchievementBadgesConfig.runCleanup()"
                                 style="margin-top:.8em;display:none;background:#d32f2f;">
-                            <span>Clean up all suspicious unlocks</span>
+                            <span data-i18n="cfg.cleanup_all">Clean up all suspicious unlocks</span>
                         </button>
                         <div id="CleanupStatus" style="margin-top:.6em;color:rgba(255,255,255,.7);font-size:.9em;"></div>
                     </div>
@@ -451,19 +451,19 @@
                 <div>
                     <button is="emby-button" type="button" class="raised button-submit block emby-button"
                             onclick="AchievementBadgesConfig.save()">
-                        <span>Save</span>
+                        <span data-i18n="cfg.save">Save</span>
                     </button>
                 </div>
 
                 <div style="margin-top:28px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08);">
                     <p style="color:rgba(255,255,255,.55);font-size:.85em;line-height:1.6;margin:0;">
-                        ❤ Achievement Badges is built and maintained in my spare time. If you find it useful, consider supporting development:
+                        <span data-i18n="cfg.footer_support">❤ Achievement Badges is built and maintained in my spare time. If you find it useful, consider supporting development:</span>
                         &nbsp;
                         <a href="https://github.com/sponsors/ZL154" target="_blank" rel="noopener" style="color:#ffd54a;text-decoration:none;margin-right:12px;">
-                            💖 Sponsor on GitHub
+                            <span data-i18n="cfg.sponsor_github">💖 Sponsor on GitHub</span>
                         </a>
                         <a href="https://ko-fi.com/zl154" target="_blank" rel="noopener" style="color:#ffd54a;text-decoration:none;">
-                            ☕ Ko-fi
+                            <span data-i18n="cfg.sponsor_kofi">☕ Ko-fi</span>
                         </a>
                     </p>
                 </div>
@@ -471,6 +471,91 @@
         </div>
 
         <script type="text/javascript">
+            // ---------- Config-page i18n ----------
+            // The translation JSON the rest of the plugin ships (Pages/
+            // translations/{lang}.json) is reused here, so the admin settings
+            // page is no longer English-only. Static text carries
+            // data-i18n / data-i18n-placeholder markers; dynamic strings go
+            // through cfgT().
+            //
+            // URL resolution mirrors Pages/index.html: derive the server root
+            // from location.pathname so reverse-proxy subpath installs
+            // (/jellyfin/web/...) work even before ApiClient mounts.
+            var AB_CFG_DEFAULT_LANG = 'zh';
+            var abCfgDict = {};
+            function cfgT(key, fallback) {
+                if (abCfgDict && Object.prototype.hasOwnProperty.call(abCfgDict, key)) return abCfgDict[key];
+                return fallback != null ? fallback : key;
+            }
+            window.abCfgTr = cfgT;
+            function abCfgBase() {
+                try {
+                    var p = window.location.pathname || '';
+                    var i = p.lastIndexOf('/web/');
+                    if (i >= 0) return p.substring(0, i + 1);
+                    var s = p.lastIndexOf('/');
+                    if (s > 0) return p.substring(0, s + 1);
+                } catch (e) {}
+                return '/';
+            }
+            function abCfgApply(dict) {
+                if (!dict) return;
+                abCfgDict = dict;
+                var nodes = document.querySelectorAll('[data-i18n]');
+                for (var i = 0; i < nodes.length; i++) {
+                    var node = nodes[i];
+                    // Skip containers that already have element children:
+                    // textContent would wipe them out.
+                    if (node.children && node.children.length > 0) continue;
+                    var k = node.getAttribute('data-i18n');
+                    if (k && dict[k] != null) node.textContent = dict[k];
+                }
+                var ph = document.querySelectorAll('[data-i18n-placeholder]');
+                for (var j = 0; j < ph.length; j++) {
+                    var pk = ph[j].getAttribute('data-i18n-placeholder');
+                    if (pk && dict[pk] != null) ph[j].setAttribute('placeholder', dict[pk]);
+                }
+            }
+            function abCfgPickLang() {
+                try {
+                    var manual = (window.localStorage && localStorage.getItem('achievementBadgesLangManual')) || '';
+                    if (manual) return manual;
+                    var stored = (window.localStorage && localStorage.getItem('achievementBadgesLang')) || '';
+                    if (stored) return stored;
+                } catch (e) {}
+                var nav = (navigator.language || navigator.userLanguage || AB_CFG_DEFAULT_LANG).toLowerCase().slice(0, 2);
+                var supported = ['en', 'fr', 'es', 'de', 'it', 'pt', 'zh', 'ja'];
+                return supported.indexOf(nav) >= 0 ? nav : AB_CFG_DEFAULT_LANG;
+            }
+            function abCfgLoad(lang) {
+                var clean = String(lang || AB_CFG_DEFAULT_LANG).toLowerCase().replace(/[^a-z-]/g, '') || AB_CFG_DEFAULT_LANG;
+                var url;
+                try {
+                    var api = window.ApiClient || window.apiClient || null;
+                    url = (api && typeof api.getUrl === 'function')
+                        ? api.getUrl('Plugins/AchievementBadges/translations/' + clean)
+                        : abCfgBase() + 'Plugins/AchievementBadges/translations/' + clean;
+                } catch (e) { url = abCfgBase() + 'Plugins/AchievementBadges/translations/' + clean; }
+                return fetch(url, { credentials: 'same-origin' })
+                    .then(function (r) { return r.ok ? r.json() : null; })
+                    .then(function (d) { abCfgApply(d); return d; })
+                    .catch(function () { return null; });
+            }
+            (function abCfgInitI18n() {
+                // First paint from localStorage/navigator, then re-resolve
+                // against the server default once ApiClient has mounted.
+                try { abCfgLoad(abCfgPickLang()); } catch (e) {}
+                var started = Date.now();
+                (function tick() {
+                    var api = window.ApiClient || window.apiClient;
+                    if (api && typeof api.getUrl === 'function') {
+                        abCfgLoad(abCfgPickLang());
+                        return;
+                    }
+                    if (Date.now() - started > 5000) { abCfgLoad(abCfgPickLang()); return; }
+                    setTimeout(tick, 80);
+                })();
+            })();
             var AchievementBadgesConfig = {
                 pluginId: 'd9f4b7d2-6c4d-4d7e-9d2d-1c6b4f8e2a11',
                 customTabsPluginId: 'fbacd0b6-fd46-4a05-b0a4-2045d6a135b0',
@@ -599,7 +684,7 @@
                     var select = document.getElementById('AchievementBadgesUserSelect');
                     if (!select) return Promise.resolve([]);
                     select.disabled = true;
-                    select.innerHTML = '<option value="">Loading users...</option>';
+                    select.innerHTML = '<option value="">' + cfgT('cfg.loading_users', 'Loading users...') + '</option>';
 
                     return fetch(this.getApiUrl('Users'), {
                         headers: this.getAuthHeaders(),
@@ -616,7 +701,7 @@
                         select.innerHTML = '';
                         var placeholder = document.createElement('option');
                         placeholder.value = '';
-                        placeholder.textContent = users.length ? 'Pick a user...' : 'No users found';
+                        placeholder.textContent = users.length ? cfgT('cfg.pick_a_user', 'Pick a user...') : cfgT('cfg.no_users_found', 'No users found');
                         select.appendChild(placeholder);
 
                         users.forEach(function (user) {
@@ -630,7 +715,7 @@
                         select.disabled = users.length === 0;
                         return users;
                     }).catch(function () {
-                        select.innerHTML = '<option value="">Could not load users</option>';
+                        select.innerHTML = '<option value="">' + cfgT('cfg.users_load_failed', 'Could not load users') + '</option>';
                         select.disabled = true;
                         return [];
                     });
@@ -640,7 +725,7 @@
                     var select = document.getElementById('AchievementBadgesUserSelect');
                     var userId = select && select.value ? select.value : '';
                     if (!userId) {
-                        alert('Pick a user first.');
+                        alert(cfgT('cfg.pick_user_first', 'Pick a user first.'));
                         return;
                     }
                     window.location.href = this.getWebRoot() + 'index.html#/configurationpage?name=achievementbadges&userId=' + encodeURIComponent(userId);
@@ -696,7 +781,7 @@
                     var select = document.getElementById(selectId);
                     if (!select) return Promise.resolve([]);
                     select.disabled = true;
-                    select.innerHTML = '<option value="">Loading users...</option>';
+                    select.innerHTML = '<option value="">' + cfgT('cfg.loading_users', 'Loading users...') + '</option>';
                     return fetch(this.getApiUrl('Users'), {
                         headers: this.getAuthHeaders(),
                         credentials: 'include'
@@ -711,7 +796,7 @@
                         select.innerHTML = '';
                         var placeholder = document.createElement('option');
                         placeholder.value = '';
-                        placeholder.textContent = users.length ? 'Pick a user...' : 'No users found';
+                        placeholder.textContent = users.length ? cfgT('cfg.pick_a_user', 'Pick a user...') : cfgT('cfg.no_users_found', 'No users found');
                         select.appendChild(placeholder);
                         users.forEach(function (user) {
                             if (!user || !user.Id) return;
@@ -723,7 +808,7 @@
                         select.disabled = users.length === 0;
                         return users;
                     }).catch(function () {
-                        select.innerHTML = '<option value="">Could not load users</option>';
+                        select.innerHTML = '<option value="">' + cfgT('cfg.users_load_failed', 'Could not load users') + '</option>';
                         select.disabled = true;
                         return [];
                     });
@@ -777,7 +862,7 @@
                     var field = document.getElementById('CustomTabsMarker');
                     var status = document.getElementById('CustomTabsCopyStatus');
                     if (!field) return;
-                    var done = function () { if (status) status.textContent = 'Copied.'; };
+                    var done = function () { if (status) status.textContent = cfgT('cfg.copied', 'Copied.'); };
                     if (navigator.clipboard && window.isSecureContext) {
                         navigator.clipboard.writeText(field.value).then(done).catch(function () {
                             field.select();
@@ -798,10 +883,10 @@
                     var isMovieEl = document.getElementById('AchievementBadgesTestIsMovie');
                     var statusEl = document.getElementById('AchievementBadgesTestStatus');
                     var uid = sel && sel.value;
-                    if (!uid) { statusEl.textContent = 'Pick a target user first.'; return; }
+                    if (!uid) { statusEl.textContent = cfgT('cfg.pick_target_first', 'Pick a target user first.'); return; }
                     var count = Math.max(1, Math.min(500, parseInt(countEl.value, 10) || 50));
                     var isMovie = !!isMovieEl.checked;
-                    statusEl.textContent = 'Injecting…';
+                    statusEl.textContent = cfgT('cfg.injecting', 'Injecting…');
                     fetch(this.getApiUrl('Plugins/AchievementBadges/admin/users/' + encodeURIComponent(uid) + '/test/inject-playbacks?count=' + count + '&isMovie=' + (isMovie ? 'true' : 'false')), {
                         method: 'POST',
                         headers: this.getAuthHeaders(),
@@ -810,9 +895,9 @@
                         if (!r.ok) throw new Error('HTTP ' + r.status);
                         return r.json();
                     }).then(function (j) {
-                        statusEl.textContent = 'Done. Requested ' + (j.Requested || 0) + ', credited ' + (j.Credited || 0) + ', blocked ' + (j.Blocked || 0) + (j.LastBlockMessage ? ' — last block: ' + j.LastBlockMessage : '');
+                        statusEl.textContent = cfgT('cfg.inject_done', 'Done. Requested ') + (j.Requested || 0) + cfgT('cfg.inject_credited', ', credited ') + (j.Credited || 0) + cfgT('cfg.inject_blocked', ', blocked ') + (j.Blocked || 0) + (j.LastBlockMessage ? cfgT('cfg.inject_last_block', ' — last block: ') + j.LastBlockMessage : '');
                     }).catch(function (e) {
-                        statusEl.textContent = 'Failed: ' + (e.message || e);
+                        statusEl.textContent = cfgT('cfg.failed', 'Failed: ') + (e.message || e);
                     });
                 },
 
@@ -823,20 +908,20 @@
                     var statusEl = document.getElementById('AchievementBadgesRevokeStatus');
                     var uid = sel && sel.value;
                     var bid = (idEl.value || '').trim();
-                    if (!uid || !bid) { statusEl.textContent = 'Pick a user and enter a badge id.'; return; }
-                    if (!confirm('Revoke this badge? The user will lose the unlock.')) return;
+                    if (!uid || !bid) { statusEl.textContent = cfgT('cfg.revoke_pick', 'Pick a user and enter a badge id.'); return; }
+                    if (!confirm(cfgT('cfg.revoke_confirm', 'Revoke this badge? The user will lose the unlock.'))) return;
                     fetch(this.getApiUrl('Plugins/AchievementBadges/admin/users/' + encodeURIComponent(uid) + '/badges/' + encodeURIComponent(bid)), {
                         method: 'DELETE',
                         headers: this.getAuthHeaders(),
                         credentials: 'include'
                     }).then(function (r) {
-                        if (r.status === 404) { statusEl.textContent = 'Badge not found for that user.'; return; }
+                        if (r.status === 404) { statusEl.textContent = cfgT('cfg.revoke_not_found', 'Badge not found for that user.'); return; }
                         if (!r.ok) throw new Error('HTTP ' + r.status);
                         return r.json();
                     }).then(function (j) {
-                        if (j) statusEl.textContent = 'Revoked' + (j.Title ? ' (' + j.Title + ')' : '') + '.';
+                        if (j) statusEl.textContent = cfgT('cfg.revoked', 'Revoked') + (j.Title ? ' (' + j.Title + ')' : '') + '.';
                     }).catch(function (e) {
-                        statusEl.textContent = 'Failed: ' + (e.message || e);
+                        statusEl.textContent = cfgT('cfg.failed', 'Failed: ') + (e.message || e);
                     });
                 },
 
@@ -846,7 +931,7 @@
                         return;
                     }
 
-                    alert('Toast system is not loaded yet. Refresh the page and try again.');
+                    alert(cfgT('cfg.toast_not_loaded', 'Toast system is not loaded yet. Refresh the page and try again.'));
                 },
 
                 testUnlockBatch: function () {
@@ -855,14 +940,14 @@
                         return;
                     }
 
-                    alert('Toast system is not loaded yet. Refresh the page and try again.');
+                    alert(cfgT('cfg.toast_not_loaded', 'Toast system is not loaded yet. Refresh the page and try again.'));
                 },
 
                 // ───────── [v2.1.0 M4] Custom badges admin handlers ──────────
                 loadCustomBadges: function () {
                     var list = document.getElementById('CustomBadgesList');
                     if (!list) return;
-                    list.textContent = 'Loading...';
+                    list.textContent = cfgT('common.loading', 'Loading...');
                     fetch(this.getApiUrl('Plugins/AchievementBadges/custom-badges'), {
                         headers: this.getAuthHeaders(),
                         credentials: 'include'
@@ -871,12 +956,12 @@
                         return r.json();
                     }).then(function (badges) {
                         if (!badges || badges.length === 0) {
-                            list.innerHTML = '<em>No custom badges yet. Create one below.</em>';
+                            list.innerHTML = '<em>' + cfgT('cfg.no_custom_badges', 'No custom badges yet. Create one below.') + '</em>';
                             return;
                         }
                         var html = '<table style="width:100%;border-collapse:collapse;font-size:.9em;">';
                         html += '<thead><tr style="border-bottom:1px solid rgba(255,255,255,.15);">';
-                        html += '<th style="text-align:left;padding:.4em;">Name</th><th style="text-align:left;padding:.4em;">Rarity</th><th style="text-align:left;padding:.4em;">Media</th><th style="text-align:left;padding:.4em;">Enabled</th><th style="text-align:left;padding:.4em;">Action</th>';
+                        html += '<th style="text-align:left;padding:.4em;">' + cfgT('cfg.col_name', 'Name') + '</th><th style="text-align:left;padding:.4em;">' + cfgT('cfg.col_rarity', 'Rarity') + '</th><th style="text-align:left;padding:.4em;">' + cfgT('cfg.col_media', 'Media') + '</th><th style="text-align:left;padding:.4em;">' + cfgT('cfg.col_enabled', 'Enabled') + '</th><th style="text-align:left;padding:.4em;">' + cfgT('cfg.col_action', 'Action') + '</th>';
                         html += '</tr></thead><tbody>';
                         badges.forEach(function (b) {
                             html += '<tr style="border-bottom:1px solid rgba(255,255,255,.06);">';
@@ -884,13 +969,13 @@
                             html += '<td style="padding:.4em;">' + escapeHtml(b.Rarity || '') + '</td>';
                             html += '<td style="padding:.4em;">' + escapeHtml(b.Media || '') + '</td>';
                             html += '<td style="padding:.4em;">' + (b.Enabled ? '✓' : '✗') + '</td>';
-                            html += '<td style="padding:.4em;"><button is="emby-button" type="button" class="emby-button" onclick="AchievementBadgesConfig.deleteCustomBadge(\'' + escapeAttr(b.Id) + '\')" style="background:#d32f2f;padding:.3em .6em;">Delete</button></td>';
+                            html += '<td style="padding:.4em;"><button is="emby-button" type="button" class="emby-button" onclick="AchievementBadgesConfig.deleteCustomBadge(\'' + escapeAttr(b.Id) + '\')" style="background:#d32f2f;padding:.3em .6em;">' + cfgT('cfg.delete', 'Delete') + '</button></td>';
                             html += '</tr>';
                         });
                         html += '</tbody></table>';
                         list.innerHTML = html;
                     }).catch(function (e) {
-                        list.textContent = 'Failed to load: ' + (e.message || e);
+                        list.textContent = cfgT('cfg.failed_to_load', 'Failed to load: ') + (e.message || e);
                     });
                 },
 
@@ -918,12 +1003,12 @@
                         ? ((document.getElementById('NewBadgeTargetResults') || {}).value || '')
                         : ((document.getElementById('NewBadgeParam').value || '').trim());
 
-                    if (!name) { status.textContent = 'Name required.'; return; }
-                    if (!threshold || threshold < 1) { status.textContent = 'Threshold must be a positive integer.'; return; }
+                    if (!name) { status.textContent = cfgT('cfg.name_required', 'Name required.'); return; }
+                    if (!threshold || threshold < 1) { status.textContent = cfgT('cfg.threshold_required', 'Threshold must be a positive integer.'); return; }
                     if (needsParam && !metricParam) {
                         status.textContent = isTarget
-                            ? 'Pick a target from the library first.'
-                            : 'This metric needs a genre filter value (e.g. Disco).';
+                            ? cfgT('cfg.pick_target_library', 'Pick a target from the library first.')
+                            : cfgT('cfg.genre_needed', 'This metric needs a genre filter value (e.g. Disco).');
                         return;
                     }
 
@@ -941,7 +1026,7 @@
                         Criteria: criteria
                     };
 
-                    status.textContent = 'Creating...';
+                    status.textContent = cfgT('cfg.creating', 'Creating...');
                     var headers = this.getAuthHeaders();
                     headers['Content-Type'] = 'application/json';
                     fetch(this.getApiUrl('Plugins/AchievementBadges/custom-badges'), {
@@ -953,7 +1038,7 @@
                         if (!r.ok) return r.json().then(function (j) { throw new Error(j.error || ('HTTP ' + r.status)); });
                         return r.json();
                     }).then(function (saved) {
-                        status.textContent = 'Created: ' + saved.Name + ' (id ' + saved.Id.substring(0, 8) + '...)';
+                        status.textContent = cfgT('cfg.created', 'Created: ') + saved.Name + ' (id ' + saved.Id.substring(0, 8) + '...)';
                         document.getElementById('NewBadgeName').value = '';
                         document.getElementById('NewBadgeDescription').value = '';
                         document.getElementById('NewBadgeIconUrl').value = '';
@@ -964,7 +1049,7 @@
                         var targetSearch = document.getElementById('NewBadgeTargetSearch');
                         var targetResults = document.getElementById('NewBadgeTargetResults');
                         if (targetSearch) { targetSearch.value = ''; }
-                        if (targetResults) { targetResults.innerHTML = '<option value="">Type to search&hellip;</option>'; }
+                        if (targetResults) { targetResults.innerHTML = '<option value="">' + cfgT('cfg.type_to_search', 'Type to search…') + '</option>'; }
                         AchievementBadgesConfig.loadCustomBadges();
                     }).catch(function (e) {
                         status.textContent = 'Failed: ' + (e.message || e);
@@ -972,16 +1057,16 @@
                 },
 
                 deleteCustomBadge: function (id) {
-                    if (!confirm('Delete this custom badge? User profiles will lose any unlock for it.')) return;
+                    if (!confirm(cfgT('cfg.delete_confirm', 'Delete this custom badge? User profiles will lose any unlock for it.'))) return;
                     var status = document.getElementById('CustomBadgesStatus');
-                    status.textContent = 'Deleting...';
+                    status.textContent = cfgT('cfg.deleting', 'Deleting...');
                     fetch(this.getApiUrl('Plugins/AchievementBadges/custom-badges/' + encodeURIComponent(id)), {
                         method: 'DELETE',
                         headers: this.getAuthHeaders(),
                         credentials: 'include'
                     }).then(function (r) {
                         if (!r.ok && r.status !== 204) throw new Error('HTTP ' + r.status);
-                        status.textContent = 'Deleted.';
+                        status.textContent = cfgT('cfg.deleted', 'Deleted.');
                         AchievementBadgesConfig.loadCustomBadges();
                     }).catch(function (e) {
                         status.textContent = 'Failed: ' + (e.message || e);
@@ -995,7 +1080,7 @@
                     var summary = document.getElementById('AuditReportSummary');
                     var table = document.getElementById('AuditReportTable');
                     var cleanupBtn = document.getElementById('CleanupBtn');
-                    summary.textContent = 'Running audit...';
+                    summary.textContent = cfgT('cfg.running_audit', 'Running audit...');
                     table.style.display = 'none';
                     cleanupBtn.style.display = 'none';
 
@@ -1008,14 +1093,14 @@
                     }).then(function (report) {
                         AchievementBadgesConfig._lastAuditReport = report;
                         if (!report.SuspiciousCount) {
-                            summary.textContent = '✓ No suspicious unlocks found across any profile.';
+                            summary.textContent = cfgT('cfg.audit_none', '✓ No suspicious unlocks found across any profile.');
                             return;
                         }
-                        summary.textContent = '⚠ Found ' + report.SuspiciousCount + ' suspicious unlock(s) across ' +
-                            new Set(report.Items.map(function (i) { return i.UserId; })).size + ' user(s).';
+                        summary.textContent = cfgT('cfg.audit_found', '⚠ Found ') + report.SuspiciousCount + cfgT('cfg.audit_found_mid', ' suspicious unlock(s) across ') +
+                            new Set(report.Items.map(function (i) { return i.UserId; })).size + cfgT('cfg.audit_found_suffix', ' user(s).');
                         var html = '<table style="width:100%;border-collapse:collapse;font-size:.85em;">';
                         html += '<thead><tr style="border-bottom:1px solid rgba(255,255,255,.15);background:rgba(0,0,0,.2);">';
-                        html += '<th style="text-align:left;padding:.4em;">Badge</th><th style="text-align:left;padding:.4em;">User</th><th style="text-align:left;padding:.4em;">Earned at</th><th style="text-align:left;padding:.4em;">Source</th>';
+                        html += '<th style="text-align:left;padding:.4em;">' + cfgT('cfg.col_badge', 'Badge') + '</th><th style="text-align:left;padding:.4em;">' + cfgT('cfg.col_user', 'User') + '</th><th style="text-align:left;padding:.4em;">' + cfgT('cfg.col_earned_at', 'Earned at') + '</th><th style="text-align:left;padding:.4em;">' + cfgT('cfg.col_source', 'Source') + '</th>';
                         html += '</tr></thead><tbody>';
                         report.Items.forEach(function (it) {
                             html += '<tr style="border-bottom:1px solid rgba(255,255,255,.06);">';
@@ -1030,20 +1115,20 @@
                         table.style.display = 'block';
                         cleanupBtn.style.display = 'inline-block';
                     }).catch(function (e) {
-                        summary.textContent = 'Audit failed: ' + (e.message || e);
+                        summary.textContent = cfgT('cfg.audit_failed', 'Audit failed: ') + (e.message || e);
                     });
                 },
 
                 runCleanup: function () {
                     var report = AchievementBadgesConfig._lastAuditReport;
                     if (!report || !report.Items || !report.Items.length) {
-                        document.getElementById('CleanupStatus').textContent = 'Run an audit first.';
+                        document.getElementById('CleanupStatus').textContent = cfgT('cfg.run_audit_first', 'Run an audit first.');
                         return;
                     }
-                    if (!confirm('This will clear ' + report.Items.length + ' badge unlock(s) across affected users. Re-earnable organically. Continue?')) return;
+                    if (!confirm(cfgT('cfg.cleanup_confirm', 'This will clear ') + report.Items.length + cfgT('cfg.cleanup_confirm_suffix', ' badge unlock(s) across affected users. Re-earnable organically. Continue?'))) return;
 
                     var status = document.getElementById('CleanupStatus');
-                    status.textContent = 'Cleaning up...';
+                    status.textContent = cfgT('cfg.cleaning_up', 'Cleaning up...');
                     var headers = this.getAuthHeaders();
                     headers['Content-Type'] = 'application/json';
                     var payload = report.Items.map(function (it) { return { BadgeId: it.BadgeId, UserId: it.UserId }; });
@@ -1056,11 +1141,11 @@
                         if (!r.ok) throw new Error('HTTP ' + r.status);
                         return r.json();
                     }).then(function (result) {
-                        status.textContent = '✓ Cleared ' + result.cleared + ' of ' + result.requested + ' requested unlocks. Affected users may need to re-load their profile.';
+                        status.textContent = cfgT('cfg.cleanup_done', '✓ Cleared ') + result.cleared + cfgT('cfg.cleanup_of', ' of ') + result.requested + cfgT('cfg.cleanup_done_suffix', ' requested unlocks. Affected users may need to re-load their profile.');
                         document.getElementById('CleanupBtn').style.display = 'none';
                         AchievementBadgesConfig._lastAuditReport = null;
                     }).catch(function (e) {
-                        status.textContent = 'Cleanup failed: ' + (e.message || e);
+                        status.textContent = cfgT('cfg.cleanup_failed', 'Cleanup failed: ') + (e.message || e);
                     });
                 }
             };
@@ -1105,8 +1190,16 @@
                 // [issue #115] The same text field carries a genre, a platform
                 // tag or a studio name depending on the metric; say which.
                 var wording = {
-                    platform: ['Platform tag', 'The platform tag JellyEmu puts on the game (case-insensitive), e.g. SNES or SegaGenesis.', 'e.g. SNES'],
-                    studio: ['Developer or publisher', 'A studio name as it appears on the game (case-insensitive), e.g. Nintendo.', 'e.g. Capcom']
+                    platform: [
+                        cfgT('cfg.param_platform', 'Platform tag'),
+                        cfgT('cfg.param_platform_desc', 'The platform tag JellyEmu puts on the game (case-insensitive), e.g. SNES or SegaGenesis.'),
+                        cfgT('cfg.param_platform_ph', 'e.g. SNES')
+                    ],
+                    studio: [
+                        cfgT('cfg.param_studio', 'Developer or publisher'),
+                        cfgT('cfg.param_studio_desc', 'A studio name as it appears on the game (case-insensitive), e.g. Nintendo.'),
+                        cfgT('cfg.param_studio_ph', 'e.g. Capcom')
+                    ]
                 }[param];
                 var text = document.getElementById('NewBadgeParam');
                 [[label, 'textContent', 0], [desc, 'textContent', 1], [text, 'placeholder', 2]].forEach(function (slot) {

@@ -149,7 +149,10 @@ public class PluginConfiguration : BasePluginConfiguration
 
     // Default UI language when a user hasn't picked one. Supported:
     // "en", "fr", "es", "de", "it", "pt", "zh", "ja".
-    public string DefaultLanguage { get; set; } = "en";
+    // Ships as Simplified Chinese so a fresh install starts in Chinese. It is
+    // a starting point, not a lock: a user's own pick in Preferences wins, and
+    // an admin can change the server-wide default on the config page.
+    public string DefaultLanguage { get; set; } = "zh";
 
     // [issue #43] Default achievements UI style for users who have not used the
     // Classic/Revamp toggle. "classic" or "revamp"; anything else is treated as

@@ -5,6 +5,10 @@
     var SHOWCASE_ID='ab-sidebar-showcase';
     var HEADER_ID='ab-header-badges';
     var USER_MENU_ID='ab-user-menu-entry';
+    /* Language used when neither the user's preference nor public-config has
+       resolved yet. Simplified Chinese, matching Plugin.DefaultLanguageCode
+       and standalone.js's AB_DEFAULT_LANG. */
+    var AB_DEFAULT_LANG='zh';
 
     /* v1.8.54: propagate the user's Classic/Revamp preference globally so the
        Friends drawer (mounted on body, on every Jellyfin page) follows the
@@ -143,9 +147,9 @@
             var prefs = parts[0] || {};
             var cfg = parts[1] || {};
             var userLang = (prefs.Language || prefs.language || 'default').toString().toLowerCase();
-            var adminLang = (cfg.DefaultLanguage || cfg.defaultLanguage || 'en').toString().toLowerCase();
+            var adminLang = (cfg.DefaultLanguage || cfg.defaultLanguage || AB_DEFAULT_LANG).toString().toLowerCase();
             var lang = (userLang === 'default' || !userLang) ? adminLang : userLang;
-            lang = (lang || 'en').replace(/[^a-z-]/g, '') || 'en';
+            lang = (lang || AB_DEFAULT_LANG).replace(/[^a-z-]/g, '') || AB_DEFAULT_LANG;
             return fetch(buildUrl('Plugins/AchievementBadges/translations/' + lang), { headers: authHeaders(), credentials: 'include' })
                 .then(function(r){ return r.ok ? r.json() : {}; })
                 .then(function(data){ _abSidebarTranslations = data || {}; applyTranslations(); })
@@ -2421,7 +2425,7 @@
     }
 
     function fetchAttachmentUrl(id){
-        if (!id) return Promise.reject(new Error('Missing attachment id'));
+        if (!id) return Promise.reject(new Error(tr('friends.attachment_missing', 'Missing attachment id')));
         if (_chatAttachmentUrls[id]) return Promise.resolve(_chatAttachmentUrls[id]);
         return fetch(buildUrl('Plugins/AchievementBadges/attachments/' + encodeURIComponent(id)), {
             headers: attachmentFetchHeaders(),

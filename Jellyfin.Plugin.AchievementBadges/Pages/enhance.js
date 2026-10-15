@@ -8,6 +8,10 @@
     var LAST_SEEN_KEY = 'ab-last-unlock-seen';
     var SHOWN_IDS_KEY = 'ab-shown-unlock-ids';
     var REDUCED_MOTION_KEY = 'ab-reduced-motion';
+    // Language used when neither the user's preference nor public-config has
+    // resolved yet. Simplified Chinese, matching Plugin.DefaultLanguageCode
+    // and standalone.js's AB_DEFAULT_LANG.
+    var AB_DEFAULT_LANG = 'zh';
     var MAX_VISIBLE_TOASTS = 1;
     var toastQueue = [];
     var visibleToastCount = 0;
@@ -161,9 +165,9 @@
             var existingContainer = document.getElementById(TOAST_ID);
             if (existingContainer) positionToastContainer(existingContainer);
             var userLang = (prefs.Language || prefs.language || 'default').toString().toLowerCase();
-            var adminLang = (cfg.DefaultLanguage || cfg.defaultLanguage || 'en').toString().toLowerCase();
+            var adminLang = (cfg.DefaultLanguage || cfg.defaultLanguage || AB_DEFAULT_LANG).toString().toLowerCase();
             var lang = (userLang === 'default' || !userLang) ? adminLang : userLang;
-            lang = (lang || 'en').replace(/[^a-z-]/g, '') || 'en';
+            lang = (lang || AB_DEFAULT_LANG).replace(/[^a-z-]/g, '') || AB_DEFAULT_LANG;
             return fetch(buildUrl('Plugins/AchievementBadges/translations/' + lang), { headers: authHeaders(), credentials: 'include' })
                 .then(function (r) { return r.ok ? r.json() : {}; })
                 .then(function (data) { _abTranslations = data || {}; })
@@ -633,26 +637,28 @@
 
     // Expose a global test helper so the admin page can preview toasts
     window.abAchievementTestToast = function (rarity) {
+        // [i18n] Preview copy goes through tr() so the admin sees the test
+        // toasts in the same language as the rest of the UI.
         var titles = {
-            common: 'Test Common Badge',
-            uncommon: 'Test Uncommon Badge',
-            rare: 'Test Rare Badge',
-            epic: 'Test Epic Badge',
-            legendary: 'Test Legendary Badge',
-            mythic: 'Test Mythic Badge'
+            common: tr('toast.test.common_title', 'Test Common Badge'),
+            uncommon: tr('toast.test.uncommon_title', 'Test Uncommon Badge'),
+            rare: tr('toast.test.rare_title', 'Test Rare Badge'),
+            epic: tr('toast.test.epic_title', 'Test Epic Badge'),
+            legendary: tr('toast.test.legendary_title', 'Test Legendary Badge'),
+            mythic: tr('toast.test.mythic_title', 'Test Mythic Badge')
         };
         var descriptions = {
-            common: 'Watch one item to begin your achievement journey.',
-            uncommon: 'Keep building your streak and your progress will show here.',
-            rare: 'A richer unlock toast now shows badge details in the second stage.',
-            epic: 'This preview confirms the title stage rolls into a useful description.',
-            legendary: 'Descriptions make unlocks feel clearer, especially for rarer badges.',
-            mythic: 'The second animation stage now has something worth showing.'
+            common: tr('toast.test.common_desc', 'Watch one item to begin your achievement journey.'),
+            uncommon: tr('toast.test.uncommon_desc', 'Keep building your streak and your progress will show here.'),
+            rare: tr('toast.test.rare_desc', 'A richer unlock toast now shows badge details in the second stage.'),
+            epic: tr('toast.test.epic_desc', 'This preview confirms the title stage rolls into a useful description.'),
+            legendary: tr('toast.test.legendary_desc', 'Descriptions make unlocks feel clearer, especially for rarer badges.'),
+            mythic: tr('toast.test.mythic_desc', 'The second animation stage now has something worth showing.')
         };
         var key = (rarity || 'common').toLowerCase();
         showToast({
             Id: 'test-' + key,
-            Title: titles[key] || 'Test Badge',
+            Title: titles[key] || tr('toast.test.badge_title', 'Test Badge'),
             Description: descriptions[key] || descriptions.common,
             Rarity: key.charAt(0).toUpperCase() + key.slice(1),
             Icon: 'emoji_events',
